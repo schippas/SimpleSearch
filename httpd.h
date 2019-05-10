@@ -27,8 +27,10 @@ public:
 	//Responds to requests with appropriate data
 	virtual void response(FILE * out, const char * document);
 
+	void run();
+	
 	//Processes incoming HTTP requests
-	void processHTTPRequest();
+	void processHTTPRequest(int fd);
 
 
 };

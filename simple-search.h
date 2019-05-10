@@ -8,9 +8,13 @@
 
 #include "httpd.h"
 
+#include<mysql/mysql.h>
+
 //This class inherits from the HTTPD class
 class SimpleSearch : public HTTPD{
-
+	//default port value
+	int searchPort = 8989;
+	
 public:
 	//Constructor
 	SimpleSearch(int port);
