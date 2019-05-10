@@ -55,7 +55,6 @@ void HTTPD::run(){
 			perror("Accept");
 			exit(-1);
 		}
-		printf("hi");
 		//process request
 		processHTTPRequest(slaveSocket);
 		close(slaveSocket);
@@ -64,7 +63,46 @@ void HTTPD::run(){
 
 //Processes incoming HTTP requests
 void HTTPD::processHTTPRequest(int fd){
-	printf("hello!");
+	//Buffer used to store the line received from the client
+	const int maxSize = 1024;
+	char request[maxSize+1];
+	int length = 0;
+
+	//current character being read
+	unsigned char newChar;
+
+	//last characters read
+	unsigned char lastChar[3];
+	lastChar[0] = '\0';
+	lastChar[1] = '\0';
+	lastChar[2] = '\0';
+	int n;
+	//Reads new characters, and looks for the <CR><LF> from the client
+	while((length < maxSize) && (n = read(fd, &newChar, sizeof(newChar))>0)){
+
+		if (lastChar[0] == '\015' && lastChar[1] == '\012' && lastChar[2] == '\015' && newChar == '\012') {
+			break;
+		}
+
+		request[length] = newChar;
+		length++;
+		lastChar[0] = lastChar[1];
+		lastChar[1] = lastChar[2];
+		lastChar[2] = newChar;		
+	} 
+	//add null character to end of string
+	request[length] = 0;
+	
+	printf( "request=%s\n", request );
+
+	const char * header = 
+          "HTTP/1.1 200 Document follows\r\n"
+          "Server: SimpleSearch \r\n"
+          "Content-type: text/html\r\n"
+          "\r\n"
+          "<H1>Simple Search</H1>";
+          
+	write(fd, header, strlen(header));
 }
 
 //default response
