@@ -25,7 +25,7 @@ public:
 	HTTPD(int port);
 
 	//Responds to requests with appropriate data
-	virtual void response(FILE * out, const char * document);
+	virtual void response(int fd, const char * document);
 
 	void run();
 	

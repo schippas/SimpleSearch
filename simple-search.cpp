@@ -14,7 +14,16 @@ SimpleSearch::SimpleSearch(int port):HTTPD(port){
 }
 
 //responds to requests
-void SimpleSearch::response(FILE * out, const char * document){
+void SimpleSearch::response(int fd, const char * document){
+	//initial HTML page
+	//note, needs some work passing characters like '?' in search
+	const char * text = 
+	   "<TITLE>Simple Search</Title>"
+	   "<CENTER><H1><em>Simple Search</em></H1>"
+	   "<H2>\n<FORM ACTION=\"search\"> Search:\n <INPUT TYPE=\"text\" NAME=\"word\"></FORM></H2>"
+	   "</CENTER>";
+	
+	write(fd, text, strlen(text));
 
 }
 

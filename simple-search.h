@@ -20,5 +20,5 @@ public:
 	SimpleSearch(int port);
 
 	//Responds to requests
-	void response(FILE * out, const char * document);	
+	void response(int fd, const char * document);	
 };

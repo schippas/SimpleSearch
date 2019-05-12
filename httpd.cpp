@@ -95,19 +95,25 @@ void HTTPD::processHTTPRequest(int fd){
 	
 	printf( "request=%s\n", request );
 
+	//HTML response
 	const char * header = 
           "HTTP/1.1 200 Document follows\r\n"
           "Server: SimpleSearch \r\n"
           "Content-type: text/html\r\n"
-          "\r\n"
-          "<H1>Simple Search</H1>";
+          "\r\n";
           
 	write(fd, header, strlen(header));
+	
+	const char * doc = request;
+	response(fd, doc);
 }
 
 //default response
-void HTTPD::response(FILE * out, const char * document){
-
+void HTTPD::response(int fd, const char * document){
+	const char * text = 
+	   "<TITLE>Simple Search</Title>";
+	
+	write(fd, text, strlen(text));
 }
 
 
