@@ -9,8 +9,9 @@
 #include "simple-search.h"
 
 //Constructor for simple search and HTTP server
-SimpleSearch::SimpleSearch(int port):HTTPD(port){
+SimpleSearch::SimpleSearch(int port, int thread):HTTPD(port, thread){
 	searchPort = port;
+	searchPoolC = thread;
 }
 
 //responds to requests
@@ -28,17 +29,23 @@ void SimpleSearch::response(int fd, const char * document){
 }
 
 int main(int argc, char ** argv){
+	//boolean for if the server is threaded
+	int thread = 0;
 	//checks for correct amount of arguments
 	if(argc < 2){
 		printf("Error: Please pass a port number!");
 		exit(-1);
+	}else if(argc > 2){
+		if(argv[1][1] == 'p'){
+			thread = 1;	
+		}
 	}
 	
 	//Get port from arguments
 	int port;
 	port = atoi(argv[1]);
 
-	SimpleSearch search(port);
+	SimpleSearch search(port, thread);
 
 	search.run();
 }

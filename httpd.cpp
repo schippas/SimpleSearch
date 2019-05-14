@@ -8,9 +8,17 @@
 
 #include "httpd.h"
 
+	//Used when using a pool of threads to serve requests.
+	void *threadPool(int fd);
+
+	//mutex lock
+	pthread_mutex_t tid1;
+	pthread_mutexattr_t attr1;
+
 //Constructr for HTTP Server
-HTTPD::HTTPD(int port){
+HTTPD::HTTPD(int port, int thread){
 	httpdPort = port;
+	poolC = thread;
 }
 
 //Runs continously to process new requests
@@ -44,19 +52,58 @@ void HTTPD::run(){
 		perror("Listen");
 		exit(-1);
 	}
+	
+	//If the application is being threaded, it skips this step and calls a new function.
+	if(!poolC){
+		//Loop that accepts incoming connections indefinitely.
+		while(1){
+			struct sockaddr_in clientIPAddress;
+			socklen_t alen = sizeof(clientIPAddress);
+			int slaveSocket = accept(masterSocket, 
+			(struct sockaddr *)&clientIPAddress, &alen);
 
-	//Loop that accepts incoming connections indefinitely.
+			if(slaveSocket < 0){
+				perror("Accept");
+				exit(-1);
+			}
+			//process request
+			processHTTPRequest(slaveSocket);
+			close(slaveSocket);
+		}
+	}else{
+		pthread_attr_t attr;
+		pthread_mutexattr_init(&attr1);
+		pthread_mutex_init(&tid1, &attr1);
+		pthread_attr_init(&attr);
+
+		pthread_t tid[QueueLength];
+		for(int i=0; i<QueueLength; i++){
+			pthread_create(&tid[i], &attr, (void* (*)(void*))threadPool(masterSocket), 
+			(void *)masterSocket);
+		}
+		pthread_join(tid[0], NULL);
+	}
+}
+
+//Used when using a pool of threads to serve requests.
+void *threadPool(int fd){
+	//accept incoming connections
 	while(1){
+		pthread_mutex_lock(&tid1);
 		struct sockaddr_in clientIPAddress;
-		socklen_t alen = sizeof(clientIPAddress);
-		int slaveSocket = accept(masterSocket, (struct sockaddr *)&clientIPAddress, &alen);
+		int alen = sizeof(clientIPAddress);
+		int slaveSocket = accept(fd, (struct sockaddr *)&clientIPAddress, (socklen_t*)&alen);
+		pthread_mutex_unlock(&tid1);
 
 		if(slaveSocket < 0){
-			perror("Accept");
+			if(errno = EINTR){
+				continue;
+			}
+			perror("accept");
 			exit(-1);
 		}
-		//process request
-		processHTTPRequest(slaveSocket);
+		
+		//processHTTPRequest(slaveSocket);
 		close(slaveSocket);
 	}
 }
