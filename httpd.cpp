@@ -70,7 +70,10 @@ void HTTPD::run(){
 			processHTTPRequest(slaveSocket);
 			close(slaveSocket);
 		}
-	}else{
+	}
+
+	else{
+		//Adds concurrency to the http server
 		pthread_attr_t attr;
 		pthread_mutexattr_init(&attr1);
 		pthread_mutex_init(&tid1, &attr1);
@@ -86,14 +89,15 @@ void HTTPD::run(){
 }
 
 //Used when using a pool of threads to serve requests.
-void *threadPool(int fd){
+int HTTPD::threadPool(int fd){
 	//accept incoming connections
 	while(1){
 		pthread_mutex_lock(&tid1);
 		struct sockaddr_in clientIPAddress;
-		int alen = sizeof(clientIPAddress);
-		int slaveSocket = accept(fd, (struct sockaddr *)&clientIPAddress, (socklen_t*)&alen);
-		pthread_mutex_unlock(&tid1);
+		socklen_t alen = sizeof(clientIPAddress);
+		int slaveSocket = accept(fd, 
+		(struct sockaddr *)&clientIPAddress, &alen);
+    		pthread_mutex_unlock(&tid1);
 
 		if(slaveSocket < 0){
 			if(errno = EINTR){
@@ -103,7 +107,7 @@ void *threadPool(int fd){
 			exit(-1);
 		}
 		
-		//processHTTPRequest(slaveSocket);
+		processHTTPRequest(slaveSocket);
 		close(slaveSocket);
 	}
 }

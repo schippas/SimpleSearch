@@ -37,7 +37,7 @@ public:
 	void run();
 
 	//Used when using a pool of threads to serve requests.
-	void *threadPool(int fd);
+	int threadPool(int fd);
 	
 	//Processes incoming HTTP requests
 	void processHTTPRequest(int fd);

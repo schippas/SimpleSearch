@@ -31,6 +31,9 @@ void SimpleSearch::response(int fd, const char * document){
 int main(int argc, char ** argv){
 	//boolean for if the server is threaded
 	int thread = 0;
+
+	int port;
+
 	//checks for correct amount of arguments
 	if(argc < 2){
 		printf("Error: Please pass a port number!");
@@ -39,11 +42,11 @@ int main(int argc, char ** argv){
 		if(argv[1][1] == 'p'){
 			thread = 1;	
 		}
-	}
-	
+		port = atoi(argv[2]);
+	}else{
 	//Get port from arguments
-	int port;
-	port = atoi(argv[1]);
+		port = atoi(argv[1]);
+	}
 
 	SimpleSearch search(port, thread);
 
