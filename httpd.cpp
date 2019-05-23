@@ -116,8 +116,13 @@ int HTTPD::threadPool(int fd){
 void HTTPD::processHTTPRequest(int fd){
 	//Buffer used to store the line received from the client
 	const int maxSize = 1024;
+	char data[maxSize+1];
 	char request[maxSize+1];
-	int length = 0;
+	int dataLength = 0;
+	int reqLength = 0;
+
+	//boolean to track when to copy request.
+	int getRequest = 0; 
 
 	//current character being read
 	unsigned char newChar;
@@ -129,22 +134,38 @@ void HTTPD::processHTTPRequest(int fd){
 	lastChar[2] = '\0';
 	int n;
 	//Reads new characters, and looks for the <CR><LF> from the client
-	while((length < maxSize) && (n = read(fd, &newChar, sizeof(newChar))>0)){
+	while((dataLength < maxSize) && (n = read(fd, &newChar, sizeof(newChar))>0)){
 
 		if (lastChar[0] == '\015' && lastChar[1] == '\012' && lastChar[2] == '\015' && newChar == '\012') {
 			break;
 		}
+		
+		//parses request
+		if(getRequest == 1){
+			request[reqLength] = newChar;
+			reqLength++;
+		}
 
-		request[length] = newChar;
-		length++;
+		//Skips the 'GET' statement, and ends after the request has ended.
+		if(newChar == ' '){
+			if(getRequest == 0){
+				getRequest = 1;
+			}else{
+				request[reqLength-1] = '\0';
+				getRequest++;
+			}
+		}
+
+		data[dataLength] = newChar;
+		dataLength++;
 		lastChar[0] = lastChar[1];
 		lastChar[1] = lastChar[2];
 		lastChar[2] = newChar;		
 	} 
 	//add null character to end of string
-	request[length] = 0;
+	data[dataLength] = 0;
 	
-	printf( "request=%s\n", request );
+	printf( "request=%s\n", data );
 
 	//HTML response
 	const char * header = 
