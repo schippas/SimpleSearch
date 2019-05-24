@@ -18,13 +18,43 @@ SimpleSearch::SimpleSearch(int port, int thread):HTTPD(port, thread){
 void SimpleSearch::response(int fd, const char * document){
 	//initial HTML page
 	//note, needs some work passing characters like '?' in search
-	const char * text = 
-	   "<TITLE>Simple Search</Title>"
-	   "<CENTER><H1><em>Simple Search</em></H1>"
-	   "<H2>\n<FORM ACTION=\"search\"> Search:\n <INPUT TYPE=\"text\" NAME=\"word\"></FORM></H2>"
-	   "</CENTER>";
+	if(!strcmp(document, "/")){
+		const char * text = 
+		   "<TITLE>Simple Search</Title>"
+		   "<CENTER><H1><em>Simple Search</em></H1>"
+		   "<H2>\n<FORM ACTION=\"search\"> Search:\n <INPUT TYPE=\"search\" NAME=\"word\">"
+		   "</FORM></H2>"
+		   "</CENTER>";
 	
-	write(fd, text, strlen(text));
+		write(fd, text, strlen(text));
+	}else 
+	
+	//Search Page and search request parsing
+	if(strncmp(document, "/search?words=", 13)){
+		const char * text = 
+		   "<TITLE>Simple Search</Title>"
+		   "<CENTER><H1><em>Simple Search</em></H1>"
+		   "<H2>\n<FORM ACTION=\"search\"> Search:\n <INPUT TYPE=\"search\" NAME=\"word\">"
+		   "</FORM></H2>"
+		   "</CENTER>";
+	
+		write(fd, text, strlen(text));
+		
+		//Words being searched
+		char **words = new char*[2048];
+		char *word = new char[2048];
+		char *request = strdup(document+13);
+		int wordCount = 0;
+		
+		//Use '+' as a delimiter to parse search words.
+		word = strtok(request, "+");
+		while(word != NULL){
+			//printf("%s\n", word);		//for debugging
+			words[wordCount] = strdup(word);
+			wordCount++;
+			word = strtok(NULL, "+");
+		}
+	}
 
 }
 
