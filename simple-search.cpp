@@ -52,6 +52,10 @@ void SimpleSearch::response(int fd, const char * document){
 		char *word = new char[2048];
 		char *request = strdup(document+13);
 		int wordCount = 0;
+
+		//url records. needs to be expandable at some point.
+		//urlList **list = new urlList*[1000];
+		//int listCount = 0;
 		
 		//Use '+' as a delimiter to parse search words.
 		word = strtok(request, "+");
@@ -78,22 +82,28 @@ void SimpleSearch::response(int fd, const char * document){
 				delete(temp);
 				return;
 			}
+			
+			//store results
 			res = mysql_use_result(conn);
+			int resCount = 0;
 			while((row = mysql_fetch_row(res)) != NULL){
-				printf("%s\n", row[0]);				
+				//printf("%s\n", row[0]);
+				//list[listCount]->words_url = atoi(row[resCount]);	
 			}
 			
 			mysql_free_result(res);
+
 			
 			delete(temp);
 		}
 
-		//free memory, make sure this is freed if MYSQL has errors!
+		//free memory, make sure everything is freed if MYSQL has errors!
 		for(int i=0; i<wordCount; i++){
 			free(words[i]);
 		}
-		delete(words);
+		delete[] words;
 		delete(word);
+		//delete[] list;
 		free(request);
 	}//if
 
