@@ -4,7 +4,7 @@ NETLIBS= -lnsl
 all: search 
  
 search: httpd.o simple-search.o 
-	$(CXX) -pthread -g -o simple-search httpd.o simple-search.o -lnsl
+	$(CXX) -pthread -g -o simple-search httpd.o simple-search.o -lnsl -lmysqlclient
 
 simple-search.o: simple-search.h simple-search.cpp
 	g++ -g -c simple-search.cpp

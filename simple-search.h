@@ -17,6 +17,11 @@ class SimpleSearch : public HTTPD{
 	//mutex lock
 	pthread_mutex_t search_tid1;
 	pthread_mutexattr_t search_attr1;
+
+	//Create a MYSQL Connection for database.
+	MYSQL *conn;
+	MYSQL_RES *res;
+	MYSQL_ROW row;
 	
 public:
 	//Constructor

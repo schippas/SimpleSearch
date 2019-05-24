@@ -12,6 +12,13 @@
 SimpleSearch::SimpleSearch(int port, int thread):HTTPD(port, thread){
 	searchPort = port;
 	searchPoolC = thread;
+
+	//initialize database connection
+	conn = mysql_init(NULL);
+	if(!mysql_real_connect(conn, "127.0.0.1", "root", NULL, "SimpleSearch", 3306, NULL, 0)){
+		fprintf(stderr, "%s\n", mysql_error(conn));
+		return;
+	}
 }
 
 //responds to requests
@@ -77,6 +84,16 @@ int main(int argc, char ** argv){
 	//Get port from arguments
 		port = atoi(argv[1]);
 	}
+
+	/*//Create a MYSQL Connection for database.
+	MYSQL *conn;
+	MYSQL_RES *res;
+	MYSQL_ROW row;
+	conn = mysql_init(NULL);
+	if(!mysql_real_connect(conn, "127.0.0.1", "root", NULL, "SimpleSearch", 3306, NULL, 0)){
+		fprintf(stderr, "%s\n", mysql_error(conn));
+		return -1;
+	}*/
 
 	SimpleSearch search(port, thread);
 

@@ -17,7 +17,7 @@
 #include <pthread.h>
 #include <errno.h>
 
-
+#include <mysql/mysql.h>
 
 //A simple HTTP server
 class HTTPD{
