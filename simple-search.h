@@ -22,6 +22,7 @@ class SimpleSearch : public HTTPD{
 	MYSQL *conn;
 	MYSQL_RES *res;
 	MYSQL_ROW row;
+	const char *wordsQuery = "SELECT words_url FROM words WHERE words_data=\"";
 	
 public:
 	//Constructor

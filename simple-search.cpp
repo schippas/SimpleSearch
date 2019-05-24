@@ -61,7 +61,41 @@ void SimpleSearch::response(int fd, const char * document){
 			wordCount++;
 			word = strtok(NULL, "+");
 		}
-	}
+
+		//MYSQL
+		for(int i = 0; i<wordCount; i++){
+
+			//create const char* query for search
+			char *temp = new char[strlen(wordsQuery)+strlen(words[i])+3]();
+			strcat(temp, wordsQuery);
+			strcat(temp, words[i]);
+			strcat(temp, "\";");
+			const char *query = temp;
+			
+			//search the database
+			if(mysql_query(conn, query)){
+				fprintf(stderr, "%s\n", mysql_error(conn));
+				delete(temp);
+				return;
+			}
+			res = mysql_use_result(conn);
+			while((row = mysql_fetch_row(res)) != NULL){
+				printf("%s\n", row[0]);				
+			}
+			
+			mysql_free_result(res);
+			
+			delete(temp);
+		}
+
+		//free memory, make sure this is freed if MYSQL has errors!
+		for(int i=0; i<wordCount; i++){
+			free(words[i]);
+		}
+		delete(words);
+		delete(word);
+		free(request);
+	}//if
 
 }
 
@@ -85,15 +119,6 @@ int main(int argc, char ** argv){
 		port = atoi(argv[1]);
 	}
 
-	/*//Create a MYSQL Connection for database.
-	MYSQL *conn;
-	MYSQL_RES *res;
-	MYSQL_ROW row;
-	conn = mysql_init(NULL);
-	if(!mysql_real_connect(conn, "127.0.0.1", "root", NULL, "SimpleSearch", 3306, NULL, 0)){
-		fprintf(stderr, "%s\n", mysql_error(conn));
-		return -1;
-	}*/
 
 	SimpleSearch search(port, thread);
 
