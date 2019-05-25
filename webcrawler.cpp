@@ -53,10 +53,33 @@ Webcrawler::Webcrawler(int max_urls){
 
 //Crawls the web for links and content
 void Webcrawler::crawl(){
-	while(urlCount < maxUrls){
-
-
+	int size;
+	int count = 0;
+	while((urlCount < maxUrls) && (count < urlCount)){
+		char *buffer = fetchHTML(list[count]->url_data, &size);	
+		count++;
 	}
+
+}
+
+//Receive the HTML Document to be parsed, using curl commands
+char *Webcrawler::fetchHTML(const char *url, int *size){
+	CURLcode res;
+	CURL * curl;
+
+	//initialize curl
+	if(curl_global_init(CURL_GLOBAL_DEFAULT) != 0){
+		fprintf(stderr, "Curl Failed!");
+		exit(-1);
+	}
+	curl = curl_easy_init();
+
+	curl_easy_setopt(curl, CURLOPT_URL, url);
+	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, curlWriteFunction); 
+}
+
+//A function that curl uses to write data to a buffer.
+size_t Webcrawler::curlWriteFunction(void *ptr, size_t size, size_t nmemb, char *buffer){
 
 }
 

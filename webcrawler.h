@@ -26,6 +26,12 @@ public:
 	//crawl the web
 	void crawl();
 
+	//Receive the HTML Document to be parsed
+	char *fetchHTML(const char *url, int *size);
+
+	//A function that curl uses to write data to a buffer.
+	static size_t curlWriteFunction(void *ptr, size_t size, size_t nmemb, char *buffer);
+
 	//Write array of urls to database
 	void writeToDatabase();
 	
