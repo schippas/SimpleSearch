@@ -150,6 +150,25 @@ void SimpleSearch::response(int fd, const char * document){
 			delete(temp);
 			
 		}	
+		
+		//Display the webpage.
+		for ( int i = 0; i < listCount; i++ ) {
+			char * text = new char[1000000];
+			strcat(text, "<h3>");
+			std::stringstream temp_str;
+			temp_str<<(i+1);
+			std::string str = temp_str.str();
+			const char* cstr2 = str.c_str();
+			strcat(text, cstr2);			
+			strcat(text, " <a href=\"");
+			strcat(text, list[i]->url_data);
+			strcat(text, "\">");
+			strcat(text, list[i]->url_title);	
+			strcat(text,  "</a><h3>\n<blockquote>");
+			strcat(text, list[i]->url_desc);
+			strcat(text, "<p></blockquote>\n");
+			write(fd, text, strlen(text));
+  		}
 
 		//free memory, make sure everything is freed if MYSQL has errors!
 		for(int i=0; i<wordCount; i++){
