@@ -19,6 +19,8 @@
 
 #include <mysql/mysql.h>
 
+#include <sstream>
+
 //A simple HTTP server
 class HTTPD{
 	//default port and queue length values

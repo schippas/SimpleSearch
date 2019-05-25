@@ -98,10 +98,13 @@ void SimpleSearch::response(int fd, const char * document){
 				for(int j=0; j<1024; j++){
 					if(list[j]->words_url == atoi(row[resCount])){
 						duplicate = 1;
+						list[j]->relevance++;
 					}
 				}
 				if(duplicate == 0){
-					list[listCount]->words_url = atoi(row[resCount]);
+					//I don't think resCount is neccessarily correct here,
+					//but it works for now.
+					list[listCount]->words_url = atoi(row[resCount]); 
 					listCount++;
 				}
 				resCount++;
@@ -110,9 +113,43 @@ void SimpleSearch::response(int fd, const char * document){
 			
 			mysql_free_result(res);
 
-			
 			delete(temp);
 		}
+
+		//SQL Query to get url information from the database
+		for(int i=0; i<listCount; i++){
+
+			//create const char* query for search
+			char *temp = new char[strlen(urlQuery)+sizeof(list[i]->words_url)+3]();
+			strcat(temp, urlQuery);
+			std::stringstream temp_str;
+			temp_str<<(list[i]->words_url);
+			std::string str = temp_str.str();
+			const char* cstr2 = str.c_str();
+			strcat(temp, cstr2);
+			strcat(temp, ";");
+			const char *query = temp;
+
+			//search the database
+			if(mysql_query(conn, query)){
+				fprintf(stderr, "%s\n", mysql_error(conn));
+				delete(temp);
+				return;
+			}
+
+			//store results
+			res = mysql_use_result(conn);
+			while((row = mysql_fetch_row(res)) != NULL){
+				list[i]->url_data = strdup(row[0]);
+				list[i]->url_title = strdup(row[1]);
+				list[i]->url_desc = strdup(row[2]);
+			}
+
+			mysql_free_result(res);			
+
+			delete(temp);
+			
+		}	
 
 		//free memory, make sure everything is freed if MYSQL has errors!
 		for(int i=0; i<wordCount; i++){
