@@ -13,7 +13,7 @@ httpd.o: httpd.h httpd.cpp
 	g++ -g -c httpd.cpp
 
 webcrawler: httpd.o webcrawler.o
-	$(CXX) -pthread -g -o webcrawler httpd.o webcrawler.o -lnsl -lmysqlclient
+	$(CXX) -pthread -g -o webcrawler httpd.o webcrawler.o -lnsl -lmysqlclient -lcurl
 
 webcrawler.o: webcrawler.h webcrawler.cpp
 	g++ -g -c webcrawler.cpp

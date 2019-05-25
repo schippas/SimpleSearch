@@ -6,10 +6,12 @@
    All Rights Reserved
  */
 
+#include <curl/curl.h>
 #include "httpd.h"
 
 class Webcrawler{
 	int maxUrls;
+	int urlCount;
 	urlList **list;
 
 	//Create a MYSQL Connection for database.
