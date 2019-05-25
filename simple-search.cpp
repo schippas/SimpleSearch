@@ -190,7 +190,7 @@ int main(int argc, char ** argv){
 
 	//checks for correct amount of arguments
 	if(argc < 2){
-		printf("Error: Please pass a port number!");
+		printf("Error: Please pass a port number!\n");
 		exit(-1);
 	}else if(argc > 2){
 		if(argv[1][1] == 'p'){

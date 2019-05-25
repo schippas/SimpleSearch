@@ -12,7 +12,10 @@ simple-search.o: simple-search.h simple-search.cpp
 httpd.o: httpd.h httpd.cpp
 	g++ -g -c httpd.cpp
 
-webcrawler: 
-	g++ -Wall -o webcrawler -g webcrawler.cpp
+webcrawler: httpd.o webcrawler.o
+	$(CXX) -pthread -g -o webcrawler httpd.o webcrawler.o -lnsl -lmysqlclient
+
+webcrawler.o: webcrawler.h webcrawler.cpp
+	g++ -g -c webcrawler.cpp
 
 

@@ -8,15 +8,6 @@
 
 #include "httpd.h"
 
-//A data structure for storing url information
-struct urlList{
-	int words_url;
-	char *url_data;
-	char *url_title;
-	char *url_desc;
-	int relevance;
-};
-
 //This class inherits from the HTTPD class
 class SimpleSearch : public HTTPD{
 	//default port value

@@ -6,11 +6,16 @@
    All Rights Reserved
  */
 
-#include "simple-search.h"
+#include "httpd.h"
 
 class Webcrawler{
 	int maxUrls;
 	urlList **list;
+
+	//Create a MYSQL Connection for database.
+	MYSQL *conn;
+	MYSQL_RES *res;
+	MYSQL_ROW row;
 
 public:
 	//constructor

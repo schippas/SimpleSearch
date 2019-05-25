@@ -21,6 +21,16 @@
 
 #include <sstream>
 
+
+//A data structure for storing url information
+struct urlList{
+	int words_url;
+	char *url_data;
+	char *url_title;
+	char *url_desc;
+	int relevance;
+};
+
 //A simple HTTP server
 class HTTPD{
 	//default port and queue length values
