@@ -57,6 +57,10 @@ void Webcrawler::crawl(){
 	int count = 0;
 	while((urlCount < maxUrls) && (count < urlCount)){
 		char *buffer = fetchHTML(list[count]->url_data, &size);	
+		if(buffer != NULL){
+			parse(buffer, size);
+		}
+		free(buffer);
 		count++;
 	}
 

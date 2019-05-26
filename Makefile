@@ -12,10 +12,13 @@ simple-search.o: simple-search.h simple-search.cpp
 httpd.o: httpd.h httpd.cpp
 	g++ -g -c httpd.cpp
 
-webcrawler: httpd.o webcrawler.o
-	$(CXX) -pthread -g -o webcrawler httpd.o webcrawler.o -lnsl -lmysqlclient -lcurl
+webcrawler: httpd.o webcrawler.o HTMLParser.o
+	$(CXX) -pthread -g -o webcrawler httpd.o webcrawler.o HTMLParser.o -lnsl -lmysqlclient -lcurl
 
-webcrawler.o: webcrawler.h webcrawler.cpp
+webcrawler.o: webcrawler.h webcrawler.cpp 
 	g++ -g -c webcrawler.cpp
+
+HTMLParser.o: HTMLParser.h HTMLParser.cpp
+	g++ -g -c HTMLParser.cpp
 
 

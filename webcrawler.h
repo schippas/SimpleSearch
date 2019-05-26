@@ -7,6 +7,7 @@
  */
 
 #include <curl/curl.h>
+#include "HTMLParser.h"
 #include "httpd.h"
 
 //Struct for the HTML data being received from curl.
@@ -15,7 +16,7 @@ struct parseString{
 	size_t len;
 };
 
-class Webcrawler{
+class Webcrawler : public HTMLParser{
 	int maxUrls;
 	int urlCount;
 	urlList **list;
