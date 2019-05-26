@@ -67,20 +67,47 @@ char *Webcrawler::fetchHTML(const char *url, int *size){
 	CURLcode res;
 	CURL * curl;
 
+	//buffer holding HTML data from curl
+	parseString buffer;
+	buffer.len = 0;
+	buffer.data = (char*)malloc(buffer.len+1);
+	buffer.data[0] = '\0';
+
 	//initialize curl
 	if(curl_global_init(CURL_GLOBAL_DEFAULT) != 0){
-		fprintf(stderr, "Curl Failed!");
+		fprintf(stderr, "Curl Initialization Failed!\n");
 		exit(-1);
 	}
 	curl = curl_easy_init();
 
 	curl_easy_setopt(curl, CURLOPT_URL, url);
 	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, curlWriteFunction); 
+	curl_easy_setopt(curl, CURLOPT_WRITEDATA, &buffer);
+
+	res = curl_easy_perform(curl);
+	
+    	if (res != CURLE_OK) {
+        	fprintf(stderr, "Curl Failed!: %s\n", curl_easy_strerror(res));
+    	}
+
+	curl_easy_cleanup(curl);
+
+	*size = buffer.len;
+
+	return buffer.data;	
 }
 
 //A function that curl uses to write data to a buffer.
-size_t Webcrawler::curlWriteFunction(void *ptr, size_t size, size_t nmemb, char *buffer){
+size_t Webcrawler::curlWriteFunction(void *ptr, size_t size, size_t nmemb, parseString *buffer){
+	size_t temp_len = buffer->len + (size * nmemb);
+	buffer->data = (char*)realloc(buffer->data, temp_len+1);
 
+	//copies data over
+	memcpy(buffer->data + buffer->len, ptr, size * nmemb);
+	buffer->data[temp_len] = '\0';
+	buffer->len = temp_len;
+
+	return size*nmemb;
 }
 
 //Writes and updates data on the database

@@ -9,6 +9,12 @@
 #include <curl/curl.h>
 #include "httpd.h"
 
+//Struct for the HTML data being received from curl.
+struct parseString{
+	char *data;
+	size_t len;
+};
+
 class Webcrawler{
 	int maxUrls;
 	int urlCount;
@@ -30,7 +36,7 @@ public:
 	char *fetchHTML(const char *url, int *size);
 
 	//A function that curl uses to write data to a buffer.
-	static size_t curlWriteFunction(void *ptr, size_t size, size_t nmemb, char *buffer);
+	static size_t curlWriteFunction(void *ptr, size_t size, size_t nmemb, parseString *buffer);
 
 	//Write array of urls to database
 	void writeToDatabase();
