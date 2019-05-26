@@ -139,11 +139,20 @@ void SimpleSearch::response(int fd, const char * document){
 			//store results
 			res = mysql_use_result(conn);
 			
-			//Should add error checking for NULL values
 			while((row = mysql_fetch_row(res)) != NULL){
 				list[i]->url_data = strdup(row[0]);
-				list[i]->url_title = strdup(row[1]);
-				list[i]->url_desc = strdup(row[2]);
+
+				//Includes error checking for Blank values.
+				if(strcmp(row[1], "")){
+					list[i]->url_title = strdup(row[1]);
+				}else{
+					list[i]->url_title = strdup(row[0]);
+				}
+				if(strcmp(row[2], "")){
+					list[i]->url_desc = strdup(row[2]);
+				}else{
+					list[i]->url_desc = strdup("No Description");
+				}
 			}
 
 			mysql_free_result(res);			
