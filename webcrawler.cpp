@@ -41,8 +41,8 @@ Webcrawler::Webcrawler(int max_urls){
 		if((row = mysql_fetch_row(res)) != NULL){
 			list[i]->words_url = atoi(row[0]);
 			list[i]->url_data = strdup(row[1]);
-			list[i]->url_title = strdup(row[2]);
-			list[i]->url_desc = strdup(row[3]);
+			//list[i]->url_title = strdup(row[2]);
+			//list[i]->url_desc = strdup(row[3]);
 			urlCount++;
 		}
 		
@@ -125,14 +125,14 @@ void Webcrawler::writeToDatabase(){
 //Stores a website's title
 void Webcrawler::onTitleFound(char *title, int count){
 
-	//stores the url title in the list to be written later.
 	list[count]->url_title = strdup(title);
 }
 
 //Parses and stores a website's data
-void Webcrawler::onContentFound(char c){
+void Webcrawler::onContentFound(char *desc, int count){
 	
-
+	//store the url description in the list to be written later.
+	list[count]->url_desc = strdup(desc);
 }
 	
 //Parses and stores new urls

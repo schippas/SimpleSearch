@@ -31,6 +31,7 @@ void HTMLParser::parse(char *buffer, int size, int currentUrl){
 	int maxLength = 2048;
 	int count = 0;
 	int descCount = 0;
+	//int wordCount = 0;
 
 	//Booleans for when content is found
 	int titleFound = 0;
@@ -41,6 +42,7 @@ void HTMLParser::parse(char *buffer, int size, int currentUrl){
 	char *title_buf = new char[maxLength];
 	char *href_buf = new char[maxLength];
 	char *desc_buf = new char[maxLength];
+	char *word_buf = new char[maxLength];
 	char * buf_end = buffer + size;
 	
 	while(buf < buf_end){
@@ -106,6 +108,7 @@ void HTMLParser::parse(char *buffer, int size, int currentUrl){
 				descFound = 1;
 				descCount = 0;
 				//printf("%s\n", desc_buf);	//for debugging
+				onContentFound(desc_buf, currentUrl);
 			}else if(cmp(&buf, ">")){
 				state = START;
 				descCount = 0;
@@ -113,7 +116,9 @@ void HTMLParser::parse(char *buffer, int size, int currentUrl){
 			}else{
 				if(descCount < maxLength-1){
 					desc_buf[descCount] = *buf;
+					//word_buf[wordCount] = *buf;
 					descCount++;
+					//wordCount++;
 				}
 				buf++;
 			}
@@ -127,6 +132,7 @@ void HTMLParser::parse(char *buffer, int size, int currentUrl){
 	delete(title_buf);
 	delete(href_buf);
 	delete(desc_buf);
+	delete(word_buf);
 }
 
 //Stores a website's title
@@ -135,7 +141,7 @@ void HTMLParser::onTitleFound(char *title, int count){
 }
 
 //Parses and stores a website's data
-void HTMLParser::onContentFound(char c){
+void HTMLParser::onContentFound(char *desc, int count){
 
 }
 	

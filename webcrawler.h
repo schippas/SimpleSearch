@@ -46,7 +46,7 @@ public:
 	void onTitleFound(char *title, int count);
 
 	//Parses and stores a website's data
-	void onContentFound(char c);
+	void onContentFound(char *desc, int count);
 	
 	//Parses and stores new urls
 	void onAnchorFound(char *url);
