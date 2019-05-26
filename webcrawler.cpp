@@ -137,12 +137,22 @@ void Webcrawler::onContentFound(char c){
 	
 //Parses and stores new urls
 void Webcrawler::onAnchorFound(char *url){
-	
+	int duplicate = 0;	
+
 	//Stores mew urls in the list to be written later.
 	if(urlCount < maxUrls){
-		list[urlCount]->url_data = strdup(url);
-		list[urlCount]->words_url = urlCount;
-		urlCount++;
+		for(int i = 0; i<urlCount; i++){
+			if(!strcmp(url, list[i]->url_data)){
+				duplicate = 1;
+			}
+		}
+		//Checks to make sure there are no duplicate links.
+		if(!duplicate){
+			list[urlCount]->url_data = strdup(url);
+			list[urlCount]->words_url = urlCount;
+			printf("%s, %d\n", url, urlCount);		//for debugging.
+			urlCount++;
+		}
 	}
 }
 

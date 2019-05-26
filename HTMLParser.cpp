@@ -22,7 +22,7 @@ int HTMLParser::cmp(char **buf, const char *c){
 //Parses HTML data to be inserted into the database.
 void HTMLParser::parse(char *buffer, int size, int currentUrl){
 
-	enum { START, TITLE, ANCHOR } state;
+	enum { START, TITLE, ANCHOR, CONTENT } state;
 
 	//Initial State of the parser
 	state = START;
@@ -30,14 +30,17 @@ void HTMLParser::parse(char *buffer, int size, int currentUrl){
 	//Max length for title, url, and description buffers. Probably change later.
 	int maxLength = 2048;
 	int count = 0;
+	int descCount = 0;
 
 	//Booleans for when content is found
 	int titleFound = 0;
+	int descFound = 0;
 
 	//Buffers for storing data. Can probably reuse one for multiple things. 
 	char *buf = buffer;
 	char *title_buf = new char[maxLength];
 	char *href_buf = new char[maxLength];
+	char *desc_buf = new char[maxLength];
 	char * buf_end = buffer + size;
 	
 	while(buf < buf_end){
@@ -52,9 +55,10 @@ void HTMLParser::parse(char *buffer, int size, int currentUrl){
 				href_buf[0] = 'h';
 				count = 1;
 				state = ANCHOR;
+			}else if((cmp(&buf, "<META CONTENT=\"")) && !(descFound)){
+				descCount = 0;
+				state = CONTENT;
 			}else{
-				char c = *buf;
-				
 				buf++;
 			}
 
@@ -80,7 +84,7 @@ void HTMLParser::parse(char *buffer, int size, int currentUrl){
 		}
 		case ANCHOR: {
 			//end of href
-			if(cmp(&buf, "\">")){
+			if(cmp(&buf, "\"")){
 				state = START;
 				href_buf[count] = '\0';
 				count = 0;
@@ -95,6 +99,26 @@ void HTMLParser::parse(char *buffer, int size, int currentUrl){
 			}
 			break;
 		}
+		case CONTENT: {
+			if(cmp(&buf, "\" name=\"description")){
+				state = START;
+				desc_buf[descCount] = '\0';
+				descFound = 1;
+				descCount = 0;
+				//printf("%s\n", desc_buf);	//for debugging
+			}else if(cmp(&buf, ">")){
+				state = START;
+				descCount = 0;
+				desc_buf[descCount] = '\0';
+			}else{
+				if(descCount < maxLength-1){
+					desc_buf[descCount] = *buf;
+					descCount++;
+				}
+				buf++;
+			}
+			break;
+		}//case
 		}//switch
 
 	}//while
@@ -102,6 +126,7 @@ void HTMLParser::parse(char *buffer, int size, int currentUrl){
 	//Make sure everything is freed!
 	delete(title_buf);
 	delete(href_buf);
+	delete(desc_buf);
 }
 
 //Stores a website's title
