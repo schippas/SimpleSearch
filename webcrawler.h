@@ -41,6 +41,15 @@ public:
 
 	//Write array of urls to database
 	void writeToDatabase();
+
+	//Stores a website's title
+	void onTitleFound(char *title);
+
+	//Parses and stores a website's data
+	void onContentFound(char c);
+	
+	//Parses and stores new urls
+	void onAnchorFound(char *url);
 	
 
 };

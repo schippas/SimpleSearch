@@ -15,11 +15,17 @@ class HTMLParser{
 public:
 	//Parses HTML data to be inserted into the database.
 	void parse(char *buffer, int size);
+
+	//Function to compare text.
+	int cmp(char **buf, const char *m);
 	
+	//Stores a website's title
+	virtual void onTitleFound(char *title);
+
 	//Parses and stores a website's data
-	void onContentFound(char c);
+	virtual void onContentFound(char c);
 	
 	//Parses and stores new urls
-	void onAnchorFound(char *url);
+	virtual void onAnchorFound(char *url);
 
 };

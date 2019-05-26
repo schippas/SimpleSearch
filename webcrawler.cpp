@@ -66,6 +66,8 @@ void Webcrawler::crawl(){
 
 }
 
+
+
 //Receive the HTML Document to be parsed, using curl commands
 char *Webcrawler::fetchHTML(const char *url, int *size){
 	CURLcode res;
@@ -134,3 +136,19 @@ int main(int argc, char ** argv){
 
 	webcrawler.crawl();
 }
+
+//Stores a website's title
+void Webcrawler::onTitleFound(char *title){
+
+}
+
+//Parses and stores a website's data
+void Webcrawler::onContentFound(char c){
+
+}
+	
+//Parses and stores new urls
+void Webcrawler::onAnchorFound(char *url){
+
+}
+
