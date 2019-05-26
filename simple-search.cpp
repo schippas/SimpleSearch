@@ -96,15 +96,14 @@ void SimpleSearch::response(int fd, const char * document){
 				//printf("%s\n", row[0]);
 				//check for duplicate entries
 				for(int j=0; j<1024; j++){
-					if(list[j]->words_url == atoi(row[resCount])){
+					if(list[j]->words_url == atoi(row[0])){
 						duplicate = 1;
 						list[j]->relevance++;
 					}
 				}
 				if(duplicate == 0){
-					//I don't think resCount is neccessarily correct here,
-					//but it works for now.
-					list[listCount]->words_url = atoi(row[resCount]); 
+					//I don't think resCount is neccessary
+					list[listCount]->words_url = atoi(row[0]); 
 					listCount++;
 				}
 				resCount++;
@@ -139,6 +138,8 @@ void SimpleSearch::response(int fd, const char * document){
 
 			//store results
 			res = mysql_use_result(conn);
+			
+			//Should add error checking for NULL values
 			while((row = mysql_fetch_row(res)) != NULL){
 				list[i]->url_data = strdup(row[0]);
 				list[i]->url_title = strdup(row[1]);

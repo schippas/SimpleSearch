@@ -22,11 +22,17 @@ int HTMLParser::cmp(char **buf, const char *c){
 //Parses HTML data to be inserted into the database.
 void HTMLParser::parse(char *buffer, int size){
 
-	enum { START } state;
+	enum { START, TITLE } state;
 
+	//Initial State of the parser
 	state = START;
-	
+
+	//Max length for title, url, and description buffers. Probably change later.
+	int maxLength = 2048;
+	int count = 0;
+
 	char *buf = buffer;
+	char *title_buf = new char[maxLength];
 	char * buf_end = buffer + size;
 	
 	while(buf < buf_end){
@@ -34,12 +40,36 @@ void HTMLParser::parse(char *buffer, int size){
 		//switch for different states in the parser.
 		switch(state){
 		case START: {
-			
+			if(cmp(&buf, "<TITLE>")){
+				state = TITLE;
+			}else{
+				char c = *buf;
+				
+				buf++;
+			}
+
+			break;
+		}
+		case TITLE: {
+			//next </TITLE>
+			if(cmp(&buf, "<")){
+				state = START;
+				title_buf[count]  = '\0';
+				onTitleFound(title_buf);
+			}else{	
+				if(count < maxLength){
+					title_buf[count] = *buf;					
+					count++;
+				}
+				buf++;
+			}
 		}//case
 		}//switch
 
 	}//while
-
+	
+	//Make sure everything is freed!
+	delete(title_buf);
 }
 
 //Stores a website's title
