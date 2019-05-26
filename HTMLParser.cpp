@@ -22,7 +22,7 @@ int HTMLParser::cmp(char **buf, const char *c){
 //Parses HTML data to be inserted into the database.
 void HTMLParser::parse(char *buffer, int size, int currentUrl){
 
-	enum { START, TITLE } state;
+	enum { START, TITLE, ANCHOR } state;
 
 	//Initial State of the parser
 	state = START;
@@ -34,8 +34,10 @@ void HTMLParser::parse(char *buffer, int size, int currentUrl){
 	//Booleans for when content is found
 	int titleFound = 0;
 
+	//Buffers for storing data. Can probably reuse one for multiple things. 
 	char *buf = buffer;
 	char *title_buf = new char[maxLength];
+	char *href_buf = new char[maxLength];
 	char * buf_end = buffer + size;
 	
 	while(buf < buf_end){
@@ -45,6 +47,11 @@ void HTMLParser::parse(char *buffer, int size, int currentUrl){
 		case START: {
 			if((cmp(&buf, "<TITLE>")) && !(titleFound)){
 				state = TITLE;
+			}else if(cmp(&buf, "A HREF=\"h")){
+				//only parse http links
+				href_buf[0] = 'h';
+				count = 1;
+				state = ANCHOR;
 			}else{
 				char c = *buf;
 				
@@ -59,6 +66,7 @@ void HTMLParser::parse(char *buffer, int size, int currentUrl){
 				state = START;
 				title_buf[count]  = '\0';
 				titleFound = 1;
+				count = 0;
 				onTitleFound(title_buf, currentUrl);
 				//printf("%s\n", title_buf);		//for debugging
 			}else{	
@@ -68,13 +76,32 @@ void HTMLParser::parse(char *buffer, int size, int currentUrl){
 				}
 				buf++;
 			}
-		}//case
+			break;
+		}
+		case ANCHOR: {
+			//end of href
+			if(cmp(&buf, "\">")){
+				state = START;
+				href_buf[count] = '\0';
+				count = 0;
+				onAnchorFound(href_buf);
+				//printf("%s\n", href_buf);		//for debugging
+			}else{
+				if(count < maxLength){
+					href_buf[count] = *buf;
+					count++;
+				}
+				buf++;
+			}
+			break;
+		}
 		}//switch
 
 	}//while
 	
 	//Make sure everything is freed!
 	delete(title_buf);
+	delete(href_buf);
 }
 
 //Stores a website's title

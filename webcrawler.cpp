@@ -63,7 +63,7 @@ void Webcrawler::crawl(){
 		free(buffer);
 		count++;
 	}
-
+	
 }
 
 
@@ -121,21 +121,6 @@ void Webcrawler::writeToDatabase(){
 
 }
 
-int main(int argc, char ** argv){
-
-	int max_urls;
-	
-	if(argc < 2){
-		printf("Error: Please pass a maximum url number!\n");
-		exit(-1);
-	}else{
-		max_urls = atoi(argv[1]);
-	}
-	
-	Webcrawler webcrawler(max_urls);
-
-	webcrawler.crawl();
-}
 
 //Stores a website's title
 void Webcrawler::onTitleFound(char *title, int count){
@@ -146,11 +131,36 @@ void Webcrawler::onTitleFound(char *title, int count){
 
 //Parses and stores a website's data
 void Webcrawler::onContentFound(char c){
+	
 
 }
 	
 //Parses and stores new urls
 void Webcrawler::onAnchorFound(char *url){
+	
+	//Stores mew urls in the list to be written later.
+	if(urlCount < maxUrls){
+		list[urlCount]->url_data = strdup(url);
+		list[urlCount]->words_url = urlCount;
+		urlCount++;
+	}
+}
 
+int main(int argc, char ** argv){
+
+	int max_urls;
+	
+	if((argc < 2) || (argc > 2)){
+		printf("Usage: ./webcrawler \'number of links\'\n");
+		exit(-1);
+	}else{
+		max_urls = atoi(argv[1]);
+	}
+	
+	Webcrawler webcrawler(max_urls);
+
+	webcrawler.crawl();
+
+	//make sure to free or delete everything!
 }
 
