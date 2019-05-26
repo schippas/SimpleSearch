@@ -43,7 +43,7 @@ public:
 	void writeToDatabase();
 
 	//Stores a website's title
-	void onTitleFound(char *title);
+	void onTitleFound(char *title, int count);
 
 	//Parses and stores a website's data
 	void onContentFound(char c);

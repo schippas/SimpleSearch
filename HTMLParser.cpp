@@ -20,7 +20,7 @@ int HTMLParser::cmp(char **buf, const char *c){
 }
 
 //Parses HTML data to be inserted into the database.
-void HTMLParser::parse(char *buffer, int size){
+void HTMLParser::parse(char *buffer, int size, int currentUrl){
 
 	enum { START, TITLE } state;
 
@@ -31,6 +31,9 @@ void HTMLParser::parse(char *buffer, int size){
 	int maxLength = 2048;
 	int count = 0;
 
+	//Booleans for when content is found
+	int titleFound = 0;
+
 	char *buf = buffer;
 	char *title_buf = new char[maxLength];
 	char * buf_end = buffer + size;
@@ -40,7 +43,7 @@ void HTMLParser::parse(char *buffer, int size){
 		//switch for different states in the parser.
 		switch(state){
 		case START: {
-			if(cmp(&buf, "<TITLE>")){
+			if((cmp(&buf, "<TITLE>")) && !(titleFound)){
 				state = TITLE;
 			}else{
 				char c = *buf;
@@ -55,7 +58,9 @@ void HTMLParser::parse(char *buffer, int size){
 			if(cmp(&buf, "<")){
 				state = START;
 				title_buf[count]  = '\0';
-				onTitleFound(title_buf);
+				titleFound = 1;
+				onTitleFound(title_buf, currentUrl);
+				//printf("%s\n", title_buf);		//for debugging
 			}else{	
 				if(count < maxLength){
 					title_buf[count] = *buf;					
@@ -73,7 +78,7 @@ void HTMLParser::parse(char *buffer, int size){
 }
 
 //Stores a website's title
-void HTMLParser::onTitleFound(char *title){
+void HTMLParser::onTitleFound(char *title, int count){
 
 }
 

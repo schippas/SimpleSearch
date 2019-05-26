@@ -58,7 +58,7 @@ void Webcrawler::crawl(){
 	while((urlCount < maxUrls) && (count < urlCount)){
 		char *buffer = fetchHTML(list[count]->url_data, &size);	
 		if(buffer != NULL){
-			parse(buffer, size);
+			parse(buffer, size, count);
 		}
 		free(buffer);
 		count++;
@@ -138,8 +138,10 @@ int main(int argc, char ** argv){
 }
 
 //Stores a website's title
-void Webcrawler::onTitleFound(char *title){
+void Webcrawler::onTitleFound(char *title, int count){
 
+	//stores the url title in the list to be written later.
+	list[count]->url_title = strdup(title);
 }
 
 //Parses and stores a website's data
