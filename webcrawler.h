@@ -19,12 +19,22 @@ struct parseString{
 class Webcrawler : public HTMLParser{
 	int maxUrls;
 	int urlCount;
+	int existingUrls;
 	urlList **list;
 
 	//Create a MYSQL Connection for database.
 	MYSQL *conn;
 	MYSQL_RES *res;
 	MYSQL_ROW row;
+	const char *updateQuery1 = "UPDATE url SET url_title = \"";
+	const char *updateQuery2 = "\", url_desc = \"";
+	const char *updateQuery3 = "\" WHERE (id_url = ";
+	const char *updateQuery4 = ");";
+
+	const char *insertQuery1 = "INSERT INTO `SimpleSearch`.`url` (`url_data`, `url_title`, `url_desc`) ";
+	const char *insertQuery2 = "VALUES (\"";
+	const char *insertQuery3 = "\", \"";
+	const char *insertQuery4 = "\");";
 
 public:
 	//constructor

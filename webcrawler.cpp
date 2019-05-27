@@ -12,6 +12,7 @@
 Webcrawler::Webcrawler(int max_urls){
 	maxUrls = max_urls;
 	urlCount = 0;
+	existingUrls = 0;
 
 	//url records. needs to be expandable at some point.
 	list = new urlList*[maxUrls];
@@ -44,6 +45,7 @@ Webcrawler::Webcrawler(int max_urls){
 			//list[i]->url_title = strdup(row[2]);
 			//list[i]->url_desc = strdup(row[3]);
 			urlCount++;
+			existingUrls++;
 		}
 		
 	}
@@ -119,6 +121,96 @@ size_t Webcrawler::curlWriteFunction(void *ptr, size_t size, size_t nmemb, parse
 //Writes and updates data on the database
 void Webcrawler::writeToDatabase(){
 
+	//Update Existing URLs with new information.	
+	//shouldn't hardcode values!
+	//could probably do query creation more efficiently
+	for(int i = 0; i < existingUrls; i++){
+		char *temp = new char[strlen(updateQuery1) + strlen(updateQuery2) 
+		+ strlen(updateQuery3) + strlen(updateQuery4) + 2048 + 2048]();
+
+		strcat(temp, updateQuery1);
+
+		std::stringstream temp_str;
+		temp_str<<(list[i]->url_title);
+		std::string str = temp_str.str();
+		const char* cstr2 = str.c_str();
+		strcat(temp, cstr2);
+
+		strcat(temp, updateQuery2);
+
+		std::stringstream temp_str2;
+		temp_str2<<(list[i]->url_desc);
+		std::string str2 = temp_str2.str();
+		const char* cstr3 = str2.c_str();
+		strcat(temp, cstr3);
+
+		strcat(temp, updateQuery3);
+
+		std::stringstream temp_str3;
+		temp_str3<<(list[i]->words_url);
+		std::string str3 = temp_str3.str();
+		const char* cstr4 = str3.c_str();
+		strcat(temp, cstr4);
+
+		strcat(temp, updateQuery4);
+
+		const char *query = temp;
+
+		//printf("%s\n", query);	//used for debugging
+
+		if(mysql_query(conn, query)){
+			fprintf(stderr, "%s\n", mysql_error(conn));
+			delete(temp);
+			return;
+		}
+
+		delete(temp);
+	}//for
+	for(int i = existingUrls; i < urlCount; i++){
+		char *temp = new char[strlen(insertQuery1) + strlen(insertQuery2) 
+		+ strlen(insertQuery3) + strlen(insertQuery4) + 2048 + 2048 + 2048]();
+
+		strcat(temp, insertQuery1);
+
+		strcat(temp, insertQuery2);
+
+		std::stringstream temp_str;
+		temp_str<<(list[i]->url_data);
+		std::string str = temp_str.str();
+		const char* cstr2 = str.c_str();
+		strcat(temp, cstr2);
+
+		strcat(temp, insertQuery3);
+
+		std::stringstream temp_str2;
+		temp_str2<<(list[i]->url_title);
+		std::string str2 = temp_str2.str();
+		const char* cstr3 = str2.c_str();
+		strcat(temp, cstr3);
+
+		strcat(temp, insertQuery3);
+
+		std::stringstream temp_str3;
+		temp_str3<<(list[i]->url_title);
+		std::string str3 = temp_str3.str();
+		const char* cstr4 = str3.c_str();
+		strcat(temp, cstr4);
+
+		strcat(temp, insertQuery4);
+
+		const char *query = temp;
+
+		//printf("%s\n", query);	//used for debugging
+
+		if(mysql_query(conn, query)){
+			fprintf(stderr, "%s\n", mysql_error(conn));
+			delete(temp);
+			return;
+		}
+
+		delete(temp);
+	}
+	
 }
 
 
@@ -150,7 +242,7 @@ void Webcrawler::onAnchorFound(char *url){
 		if(!duplicate){
 			list[urlCount]->url_data = strdup(url);
 			list[urlCount]->words_url = urlCount;
-			printf("%s, %d\n", url, urlCount);		//for debugging.
+			//printf("%s, %d\n", url, urlCount);		//for debugging.
 			urlCount++;
 		}
 	}
@@ -170,6 +262,8 @@ int main(int argc, char ** argv){
 	Webcrawler webcrawler(max_urls);
 
 	webcrawler.crawl();
+
+	webcrawler.writeToDatabase();
 
 	//make sure to free or delete everything!
 }
