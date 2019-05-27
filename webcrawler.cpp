@@ -72,6 +72,7 @@ void Webcrawler::crawl(){
 
 
 //Receive the HTML Document to be parsed, using curl commands
+//NEEDS A WAY TO AVOID NONRESPONSIVE SITES!!!
 char *Webcrawler::fetchHTML(const char *url, int *size){
 	CURLcode res;
 	CURL * curl;

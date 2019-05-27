@@ -52,13 +52,15 @@ void HTMLParser::parse(char *buffer, int size, int currentUrl){
 		case START: {
 			if((cmp(&buf, "<TITLE>")) && !(titleFound)){
 				state = TITLE;
-			}else if(cmp(&buf, "A HREF=\"h")){
+			}else if(cmp(&buf, "A HREF=\"ht")){
 				//only parse http links
 				href_buf[0] = 'h';
-				count = 1;
+				href_buf[1] = 't';
+				count = 2;
 				state = ANCHOR;
 			}else if((cmp(&buf, "<META CONTENT=\"")) && !(descFound)){
 				descCount = 0;
+				//Still needs some work to parse more pages!
 				state = CONTENT;
 			}else{
 				buf++;
