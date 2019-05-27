@@ -16,7 +16,8 @@ Webcrawler::Webcrawler(int max_urls){
 
 	//url records. needs to be expandable at some point.
 	list = new urlList*[maxUrls];
-	for(int i=0; i<1024; i++){
+	//This line can be weird
+	for(int i=0; i<maxUrls; i++){
 		list[i] = new urlList;
 		list[i]->words_url = 0;
 	}
@@ -57,7 +58,7 @@ Webcrawler::Webcrawler(int max_urls){
 void Webcrawler::crawl(){
 	int size;
 	int count = 0;
-	while((urlCount < maxUrls) && (count < urlCount)){
+	while(count < urlCount){
 		char *buffer = fetchHTML(list[count]->url_data, &size);	
 		if(buffer != NULL){
 			parse(buffer, size, count);
@@ -196,6 +197,14 @@ void Webcrawler::writeToDatabase(){
 		const char* cstr4 = str3.c_str();
 		strcat(temp, cstr4);
 
+		strcat(temp, insertQuery3);
+
+		std::stringstream temp_str4;
+		temp_str4<<(list[i]->words_url);
+		std::string str4 = temp_str4.str();
+		const char* cstr5 = str4.c_str();
+		strcat(temp, cstr5);
+
 		strcat(temp, insertQuery4);
 
 		const char *query = temp;
@@ -241,7 +250,7 @@ void Webcrawler::onAnchorFound(char *url){
 		//Checks to make sure there are no duplicate links.
 		if(!duplicate){
 			list[urlCount]->url_data = strdup(url);
-			list[urlCount]->words_url = urlCount;
+			list[urlCount]->words_url = urlCount+1;
 			//printf("%s, %d\n", url, urlCount);		//for debugging.
 			urlCount++;
 		}

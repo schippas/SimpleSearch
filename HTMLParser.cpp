@@ -74,7 +74,7 @@ void HTMLParser::parse(char *buffer, int size, int currentUrl){
 				titleFound = 1;
 				count = 0;
 				onTitleFound(title_buf, currentUrl);
-				//printf("%s\n", title_buf);		//for debugging
+				printf("%s\n", title_buf);		//for debugging
 			}else{	
 				if(count < maxLength){
 					title_buf[count] = *buf;					

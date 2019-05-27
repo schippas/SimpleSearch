@@ -31,7 +31,7 @@ class Webcrawler : public HTMLParser{
 	const char *updateQuery3 = "\" WHERE (id_url = ";
 	const char *updateQuery4 = ");";
 
-	const char *insertQuery1 = "INSERT INTO `SimpleSearch`.`url` (`url_data`, `url_title`, `url_desc`) ";
+	const char *insertQuery1 = "INSERT INTO `SimpleSearch`.`url` (`url_data`, `url_title`, `url_desc`, `id_url`) ";
 	const char *insertQuery2 = "VALUES (\"";
 	const char *insertQuery3 = "\", \"";
 	const char *insertQuery4 = "\");";
