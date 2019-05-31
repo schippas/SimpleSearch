@@ -141,7 +141,7 @@ void Webcrawler::writeToDatabase(){
 		strcat(temp, updateQuery2);
 
 		std::stringstream temp_str2;
-		temp_str2<<(list[i]->url_desc);
+		temp_str2<<(list[i]->url_title);
 		std::string str2 = temp_str2.str();
 		const char* cstr3 = str2.c_str();
 		strcat(temp, cstr3);
@@ -223,6 +223,81 @@ void Webcrawler::writeToDatabase(){
 	
 }
 
+//An easy way to find search terms from items in the database.
+//should be expanded in the future. Not the fastest way of doing this.
+//Note: this is just going by title right now.
+void Webcrawler::wordParse(){
+
+
+	//Truncate word table. Easy way to avoid duplicate entries for now.
+	if(mysql_query(conn, "TRUNCATE TABLE SimpleSearch.words;")){
+		fprintf(stderr, "%s\n", mysql_error(conn));
+		return;
+	}
+
+	int wordCount = 0;
+	maxWords = 1024;
+	char *word = new char[2048];
+	word_list = new wordList*[maxWords];
+	for(int i=0; i<maxWords; i++){
+		word_list[i] = new wordList;
+		word_list[i]->words_id = 0;
+	}
+
+	for(int i = 0; i < urlCount; i++){
+		word = strtok(list[i]->url_title, " ");
+		while(word != NULL){
+			//printf("%s\n", word);		//for debugging
+			if(wordCount < maxWords){
+				word_list[wordCount]->words_data = strdup(word);
+				word_list[wordCount]->words_id = i+1;
+				wordCount++;
+			}else{
+					
+			}
+			word = strtok(NULL, " ");
+		}
+
+	}
+
+	//Write words to database
+	for(int i = 0; i < wordCount; i++){
+		char *temp = new char[strlen(wordQuery1) + strlen(wordQuery2) + strlen(wordQuery3)
+		+ strlen(wordQuery4) + 2048 + sizeof(int)]();
+
+		strcat(temp, wordQuery1);
+		strcat(temp, wordQuery2);
+		
+		std::stringstream temp_str;
+		temp_str<<(word_list[i]->words_data);
+		std::string str = temp_str.str();
+		const char* cstr2 = str.c_str();
+		strcat(temp, cstr2);
+
+		strcat(temp, wordQuery3);
+
+		std::stringstream temp_str2;
+		temp_str2<<(word_list[i]->words_id);
+		std::string str2 = temp_str2.str();
+		const char* cstr3 = str2.c_str();
+		strcat(temp, cstr3);
+
+		strcat(temp, wordQuery4);
+
+		const char *query = temp;
+
+		if(mysql_query(conn, query)){
+			fprintf(stderr, "%s\n", mysql_error(conn));
+			delete(temp);
+			return;
+		}
+
+		delete(temp);
+	}
+	delete[] word_list;
+	delete(word);
+
+}
 
 //Stores a website's title
 void Webcrawler::onTitleFound(char *title, int count){
@@ -231,6 +306,7 @@ void Webcrawler::onTitleFound(char *title, int count){
 }
 
 //Parses and stores a website's data
+//Description is not really parsed and used, as of now.
 void Webcrawler::onContentFound(char *desc, int count){
 	
 	//store the url description in the list to be written later.
@@ -274,6 +350,8 @@ int main(int argc, char ** argv){
 	webcrawler.crawl();
 
 	webcrawler.writeToDatabase();
+
+	webcrawler.wordParse();
 
 	//make sure to free or delete everything!
 }

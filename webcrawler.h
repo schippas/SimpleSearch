@@ -16,11 +16,20 @@ struct parseString{
 	size_t len;
 };
 
+//Struct for parsing out arrays of strings for search terms
+struct wordList{
+	char *words_data;
+	int words_id;
+	
+};
+
 class Webcrawler : public HTMLParser{
 	int maxUrls;
 	int urlCount;
 	int existingUrls;
 	urlList **list;
+	int maxWords;
+	wordList **word_list;
 
 	//Create a MYSQL Connection for database.
 	MYSQL *conn;
@@ -35,6 +44,11 @@ class Webcrawler : public HTMLParser{
 	const char *insertQuery2 = "VALUES (\"";
 	const char *insertQuery3 = "\", \"";
 	const char *insertQuery4 = "\");";
+
+	const char *wordQuery1 = "INSERT INTO `SimpleSearch`.`words` (`words_data`, `words_url`) ";
+	const char *wordQuery2 = "VALUES (\"";
+	const char *wordQuery3 = "\", \"";
+	const char *wordQuery4 = "\");";
 
 public:
 	//constructor
@@ -51,6 +65,10 @@ public:
 
 	//Write array of urls to database
 	void writeToDatabase();
+
+	//An easy way to find search terms from items in the database.
+	//should be expanded in the future.
+	void wordParse();
 
 	//Stores a website's title
 	void onTitleFound(char *title, int count);
