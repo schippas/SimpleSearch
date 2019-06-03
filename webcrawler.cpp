@@ -369,6 +369,13 @@ void Webcrawler::onAnchorFound(char *url){
 
 	//Stores mew urls in the list to be written later.
 	if(urlCount < maxUrls){
+
+		//This prevents duplicates, because the same site could be parsed with
+		//and without the '/'.
+		if(url[strlen(url)-1] == '/'){
+			url[strlen(url)-1] = '\0';
+		}
+
 		for(int i = 0; i<urlCount; i++){
 			if(!strcmp(url, list[i]->url_data)){
 				duplicate = 1;
