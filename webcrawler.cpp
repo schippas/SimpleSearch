@@ -72,7 +72,6 @@ void Webcrawler::crawl(){
 
 
 //Receive the HTML Document to be parsed, using curl commands
-//NEEDS A WAY TO AVOID NONRESPONSIVE SITES!!!
 char *Webcrawler::fetchHTML(const char *url, int *size){
 	CURLcode res;
 	CURL * curl;
@@ -90,9 +89,14 @@ char *Webcrawler::fetchHTML(const char *url, int *size){
 	}
 	curl = curl_easy_init();
 
+	//Sets curl operation parameters
 	curl_easy_setopt(curl, CURLOPT_URL, url);
 	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, curlWriteFunction); 
 	curl_easy_setopt(curl, CURLOPT_WRITEDATA, &buffer);
+
+	//Prevents problems from slow or unresponsive sites.
+	//Use a higher number than 10 if you have problems.
+	curl_easy_setopt(curl, CURLOPT_TIMEOUT, 10);
 
 	res = curl_easy_perform(curl);
 	
@@ -162,8 +166,8 @@ void Webcrawler::writeToDatabase(){
 
 		if(mysql_query(conn, query)){
 			fprintf(stderr, "%s\n", mysql_error(conn));
-			delete(temp);
-			return;
+			//delete(temp);
+			//return;
 		}
 
 		delete(temp);
@@ -214,8 +218,8 @@ void Webcrawler::writeToDatabase(){
 
 		if(mysql_query(conn, query)){
 			fprintf(stderr, "%s\n", mysql_error(conn));
-			delete(temp);
-			return;
+			//delete(temp);
+			//return;
 		}
 
 		delete(temp);
@@ -288,8 +292,8 @@ void Webcrawler::wordParse(){
 
 		if(mysql_query(conn, query)){
 			fprintf(stderr, "%s\n", mysql_error(conn));
-			delete(temp);
-			return;
+			//delete(temp);
+			//return;
 		}
 
 		delete(temp);
