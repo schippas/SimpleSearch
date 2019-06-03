@@ -13,15 +13,15 @@ You will need a MySQL server and database instance. I recommend using XAMPP. Ins
 You will need to create an MySQL schema named SimpleSearch, with a table named url, and  a table named words. They have the following columns:
 
 url
-* name: id_url       datatype: INT(10)          etc: PK and NN
-* name: url_data     datatype: VARCHAR(2048)    etc: NN
-* name: url_title    datatype: VARCHAR(2048)    etc: default expression = ''
-* name: url_desc     datatype: VARCHAR(2048)    etc: default expression = ''
+* name: id_url     &nbsp;&nbsp;  datatype: INT(10)       &nbsp;&nbsp;   etc: PK and NN
+* name: url_data   &nbsp;&nbsp;  datatype: VARCHAR(2048) &nbsp;&nbsp;   etc: NN
+* name: url_title  &nbsp;&nbsp;  datatype: VARCHAR(2048)  &nbsp;&nbsp;  etc: default expression = ''
+* name: url_desc   &nbsp;&nbsp;  datatype: VARCHAR(2048)  &nbsp;&nbsp;  etc: default expression = ''
 
 words
-* name: id_words     datatype: INT(10)          etc: PK, NN, and AI
-* name: words_data   datatype: VARCHAR(2048)    etc: NN
-* name: words_url    datatype: INT(10)          etc: NN
+* name: id_words  &nbsp;&nbsp;   datatype: INT(10)    &nbsp;&nbsp;      etc: PK, NN, and AI
+* name: words_data  &nbsp;&nbsp; datatype: VARCHAR(2048)  &nbsp;&nbsp;  etc: NN
+* name: words_url  &nbsp;&nbsp;  datatype: INT(10)   &nbsp;&nbsp;       etc: NN
 
 Make sure to add an initial entry into the url table, with a valid link. This is to give the Webcrawler somewher to start from, so feel free to add whatever and however many starter links you wnat.
 
@@ -46,3 +46,5 @@ To run the Search Engine, type './simple-search -p <port number>. The -p option 
 * Create a configuration utility to allow users to easily set varaibles, without going into the code.
 * Implement a faster page sort algorithm. Merge Sort would be O(n log n) instead of O(n^2).
 * Look into better ways of ranking search results.
+
+Email me at schippas@purdue.edu if you have any questions, comments, or suggestions.
