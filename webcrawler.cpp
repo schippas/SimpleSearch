@@ -28,6 +28,10 @@ Webcrawler::Webcrawler(int max_urls){
 		return;
 	}
 
+	//Ensure that the database can reconnect after waiting a while
+	my_bool reconnect = 0;
+	mysql_options(conn, MYSQL_OPT_RECONNECT, &reconnect);
+
 	//SQL request for receiving urls in the database
 	if(mysql_query(conn, "SELECT * FROM url")){
 		fprintf(stderr, "%s\n", mysql_error(conn));
@@ -125,6 +129,9 @@ size_t Webcrawler::curlWriteFunction(void *ptr, size_t size, size_t nmemb, parse
 void Webcrawler::writeToDatabase(){
 	
 	int error = 0;
+
+	//Reconnect to the database, in case it times out during the webcrawl.
+	mysql_ping(conn);
 
 	//Update Existing URLs with new information.	
 	//TODO: Find more efficient way to do query.
@@ -299,6 +306,9 @@ void Webcrawler::wordParse(){
 		}
 
 	}
+
+	//Reconnect to the database, in case it times out during the webcrawl.
+	mysql_ping(conn);
 
 	//Write words to database
 	for(int i = 0; i < wordCount; i++){

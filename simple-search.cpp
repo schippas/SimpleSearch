@@ -19,6 +19,10 @@ SimpleSearch::SimpleSearch(int port, int thread):HTTPD(port, thread){
 		fprintf(stderr, "%s\n", mysql_error(conn));
 		return;
 	}
+
+	//Ensure that the database can reconnect after waiting a while
+	my_bool reconnect = 0;
+	mysql_options(conn, MYSQL_OPT_RECONNECT, &reconnect);
 }
 
 //responds to requests
@@ -109,6 +113,9 @@ void SimpleSearch::response(int fd, const char * document){
 
 			delete(temp);
 		}
+
+		//Reconnect to the database, in case it times out.
+		mysql_ping(conn);
 
 		//SQL Query to get url information from the database
 		for(int i=0; i<listCount; i++){
