@@ -126,11 +126,14 @@ size_t Webcrawler::curlWriteFunction(void *ptr, size_t size, size_t nmemb, parse
 
 //Writes and updates data on the database
 void Webcrawler::writeToDatabase(){
+	
+	int error = 0;
 
 	//Update Existing URLs with new information.	
 	//shouldn't hardcode values!
 	//could probably do query creation more efficiently
 	for(int i = 0; i < existingUrls; i++){
+	do{	
 		char *temp = new char[strlen(updateQuery1) + strlen(updateQuery2) 
 		+ strlen(updateQuery3) + strlen(updateQuery4) + 2048 + 2048]();
 
@@ -164,15 +167,22 @@ void Webcrawler::writeToDatabase(){
 
 		//printf("%s\n", query);	//used for debugging
 
+		error = 0;
+
 		if(mysql_query(conn, query)){
 			fprintf(stderr, "%s\n", mysql_error(conn));
+			error = 1;
+			free(list[i]->url_title);
+			list[i]->url_title = strdup("Invalid Title");
 			//delete(temp);
 			//return;
 		}
 
 		delete(temp);
+	}while(error);
 	}//for
 	for(int i = existingUrls; i < urlCount; i++){
+	do{
 		char *temp = new char[strlen(insertQuery1) + strlen(insertQuery2) 
 		+ strlen(insertQuery3) + strlen(insertQuery4) + 2048 + 2048 + 2048]();
 
@@ -215,14 +225,20 @@ void Webcrawler::writeToDatabase(){
 		const char *query = temp;
 
 		//printf("%s\n", query);	//used for debugging
+		
+		error = 0;
 
 		if(mysql_query(conn, query)){
 			fprintf(stderr, "%s\n", mysql_error(conn));
+			error = 1;
+			free(list[i]->url_title);
+			list[i]->url_title = strdup("Invalid Title");
 			//delete(temp);
 			//return;
 		}
 
 		delete(temp);
+	}while(error);
 	}
 	
 }
