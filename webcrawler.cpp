@@ -257,7 +257,30 @@ void Webcrawler::wordParse(){
 				word_list[wordCount]->words_id = i+1;
 				wordCount++;
 			}else{
-					
+				//Resizes word list array when the max number of words has been hit.
+				wordList **temp_words = new wordList*[maxWords];
+				for(int i=0; i<maxWords; i++){
+					temp_words[i] = new wordList;
+					temp_words[i]->words_data = word_list[i]->words_data;
+					temp_words[i]->words_id = word_list[i]->words_id;
+				}
+
+				delete[] word_list;
+				
+				word_list = new wordList*[maxWords*2];
+				for(int i=0; i<maxWords; i++){
+					word_list[i] = new wordList;
+					word_list[i]->words_data = temp_words[i]->words_data;
+					word_list[i]->words_id = temp_words[i]->words_id;
+				}
+				for(int i=maxWords; i<maxWords*2; i++){
+					word_list[i] = new wordList;
+					word_list[i]->words_id = 0;
+				}	
+
+				maxWords = maxWords * 2;				
+
+				delete[] temp_words;
 			}
 			word = strtok(NULL, " ");
 		}
