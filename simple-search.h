@@ -6,6 +6,9 @@
    All Rights Reserved
  */
 
+#ifndef SIMPLESEARCH_SIMPLESEARCH_H_
+#define SIMPLESEARCH_SIMPLESEARCH_H_
+
 #include "httpd.h"
 
 //This class inherits from the HTTPD class
@@ -39,3 +42,5 @@ public:
 	//Sorts repsonses by relevance
 	void relevanceSort(int count);	
 };
+
+#endif //SIMPLESEARCH_SIMPLESEARCH_H_

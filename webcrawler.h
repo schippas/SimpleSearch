@@ -6,6 +6,9 @@
    All Rights Reserved
  */
 
+#ifndef SIMPLESEARCH_WEBCRAWLER_H_
+#define SIMPLESEARCH_WEBCRAWLER_H_
+
 #include <curl/curl.h>
 #include "HTMLParser.h"
 #include "httpd.h"
@@ -35,6 +38,8 @@ class Webcrawler : public HTMLParser{
 	MYSQL *conn;
 	MYSQL_RES *res;
 	MYSQL_ROW row;
+
+	//SQL queries
 	const char *updateQuery1 = "UPDATE url SET url_title = \"";
 	const char *updateQuery2 = "\", url_desc = \"";
 	const char *updateQuery3 = "\" WHERE (id_url = ";
@@ -81,3 +86,5 @@ public:
 	
 
 };
+
+#endif //SIMPLESEARCH_WEBCRAWLER_H_

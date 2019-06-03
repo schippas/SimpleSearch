@@ -136,7 +136,8 @@ void HTTPD::processHTTPRequest(int fd){
 	//Reads new characters, and looks for the <CR><LF> from the client
 	while((dataLength < maxSize) && (n = read(fd, &newChar, sizeof(newChar))>0)){
 
-		if (lastChar[0] == '\015' && lastChar[1] == '\012' && lastChar[2] == '\015' && newChar == '\012') {
+		if (lastChar[0] == '\015' && lastChar[1] == '\012' 
+		&& lastChar[2] == '\015' && newChar == '\012') {
 			break;
 		}
 		
@@ -165,7 +166,7 @@ void HTTPD::processHTTPRequest(int fd){
 	//add null character to end of string
 	data[dataLength] = 0;
 	
-	printf( "request=%s\n", data );
+	//printf( "request=%s\n", data );		//for debugging
 
 	//HTML response
 	const char * header = 

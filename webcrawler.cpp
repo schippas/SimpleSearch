@@ -14,9 +14,8 @@ Webcrawler::Webcrawler(int max_urls){
 	urlCount = 0;
 	existingUrls = 0;
 
-	//url records. needs to be expandable at some point.
+	//URL Record inizialization
 	list = new urlList*[maxUrls];
-	//This line can be weird
 	for(int i=0; i<maxUrls; i++){
 		list[i] = new urlList;
 		list[i]->words_url = 0;
@@ -24,7 +23,7 @@ Webcrawler::Webcrawler(int max_urls){
 
 	//initialize database connection
 	conn = mysql_init(NULL);
-	if(!mysql_real_connect(conn, "127.0.0.1", "root", NULL, "SimpleSearch", 3306, NULL, 0)){
+	if(!mysql_real_connect(conn, mysql_address, mysql_user, mysql_pass, mysql_schema, mysql_port, NULL, 0)){
 		fprintf(stderr, "%s\n", mysql_error(conn));
 		return;
 	}
@@ -43,8 +42,6 @@ Webcrawler::Webcrawler(int max_urls){
 		if((row = mysql_fetch_row(res)) != NULL){
 			list[i]->words_url = atoi(row[0]);
 			list[i]->url_data = strdup(row[1]);
-			//list[i]->url_title = strdup(row[2]);
-			//list[i]->url_desc = strdup(row[3]);
 			urlCount++;
 			existingUrls++;
 		}
@@ -130,121 +127,121 @@ void Webcrawler::writeToDatabase(){
 	int error = 0;
 
 	//Update Existing URLs with new information.	
-	//shouldn't hardcode values!
-	//could probably do query creation more efficiently
+	//TODO: Find more efficient way to do query.
 	for(int i = 0; i < existingUrls; i++){
-	do{	
-		char *temp = new char[strlen(updateQuery1) + strlen(updateQuery2) 
-		+ strlen(updateQuery3) + strlen(updateQuery4) + 2048 + 2048]();
+		do{	
+			char *temp = new char[strlen(updateQuery1) + strlen(updateQuery2) 
+			+ strlen(updateQuery3) + strlen(updateQuery4) + MAX_LENGTH + MAX_LENGTH]();
 
-		strcat(temp, updateQuery1);
+			strcat(temp, updateQuery1);
 
-		std::stringstream temp_str;
-		temp_str<<(list[i]->url_title);
-		std::string str = temp_str.str();
-		const char* cstr2 = str.c_str();
-		strcat(temp, cstr2);
+			std::stringstream temp_str;
+			temp_str<<(list[i]->url_title);
+			std::string str = temp_str.str();
+			const char* cstr2 = str.c_str();
+			strcat(temp, cstr2);
 
-		strcat(temp, updateQuery2);
+			strcat(temp, updateQuery2);
 
-		std::stringstream temp_str2;
-		temp_str2<<(list[i]->url_title);
-		std::string str2 = temp_str2.str();
-		const char* cstr3 = str2.c_str();
-		strcat(temp, cstr3);
+			std::stringstream temp_str2;
+			temp_str2<<(list[i]->url_title);
+			std::string str2 = temp_str2.str();
+			const char* cstr3 = str2.c_str();
+			strcat(temp, cstr3);
 
-		strcat(temp, updateQuery3);
+			strcat(temp, updateQuery3);
 
-		std::stringstream temp_str3;
-		temp_str3<<(list[i]->words_url);
-		std::string str3 = temp_str3.str();
-		const char* cstr4 = str3.c_str();
-		strcat(temp, cstr4);
+			std::stringstream temp_str3;
+			temp_str3<<(list[i]->words_url);
+			std::string str3 = temp_str3.str();
+			const char* cstr4 = str3.c_str();
+			strcat(temp, cstr4);
 
-		strcat(temp, updateQuery4);
+			strcat(temp, updateQuery4);
 
-		const char *query = temp;
+			const char *query = temp;
 
-		//printf("%s\n", query);	//used for debugging
+			//printf("%s\n", query);	//used for debugging
 
-		error = 0;
+			error = 0;
 
-		if(mysql_query(conn, query)){
-			fprintf(stderr, "%s\n", mysql_error(conn));
-			error = 1;
-			free(list[i]->url_title);
-			list[i]->url_title = strdup("Invalid Title");
-			//delete(temp);
-			//return;
-		}
+			if(mysql_query(conn, query)){
+				fprintf(stderr, "%s\n", mysql_error(conn));
+				error = 1;
+				free(list[i]->url_title);
+				list[i]->url_title = strdup("Invalid Title");
+				//delete(temp);
+				//return;
+			}
 
-		delete(temp);
-	}while(error);
+			delete(temp);
+		}while(error);
 	}//for
 	for(int i = existingUrls; i < urlCount; i++){
-	do{
-		char *temp = new char[strlen(insertQuery1) + strlen(insertQuery2) 
-		+ strlen(insertQuery3) + strlen(insertQuery4) + 2048 + 2048 + 2048]();
+		do{
+			char *temp = new char[strlen(insertQuery1) + strlen(insertQuery2) 
+			+ strlen(insertQuery3) + strlen(insertQuery4) + MAX_LENGTH 
+			+ MAX_LENGTH + MAX_LENGTH]();
 
-		strcat(temp, insertQuery1);
+			strcat(temp, insertQuery1);
 
-		strcat(temp, insertQuery2);
+			strcat(temp, insertQuery2);
 
-		std::stringstream temp_str;
-		temp_str<<(list[i]->url_data);
-		std::string str = temp_str.str();
-		const char* cstr2 = str.c_str();
-		strcat(temp, cstr2);
+			std::stringstream temp_str;
+			temp_str<<(list[i]->url_data);
+			std::string str = temp_str.str();
+			const char* cstr2 = str.c_str();
+			strcat(temp, cstr2);
 
-		strcat(temp, insertQuery3);
+			strcat(temp, insertQuery3);
 
-		std::stringstream temp_str2;
-		temp_str2<<(list[i]->url_title);
-		std::string str2 = temp_str2.str();
-		const char* cstr3 = str2.c_str();
-		strcat(temp, cstr3);
+			std::stringstream temp_str2;
+			temp_str2<<(list[i]->url_title);
+			std::string str2 = temp_str2.str();
+			const char* cstr3 = str2.c_str();
+			strcat(temp, cstr3);
 
-		strcat(temp, insertQuery3);
+			strcat(temp, insertQuery3);
 
-		std::stringstream temp_str3;
-		temp_str3<<(list[i]->url_title);
-		std::string str3 = temp_str3.str();
-		const char* cstr4 = str3.c_str();
-		strcat(temp, cstr4);
+			std::stringstream temp_str3;
+			temp_str3<<(list[i]->url_title);
+			std::string str3 = temp_str3.str();
+			const char* cstr4 = str3.c_str();
+			strcat(temp, cstr4);
 
-		strcat(temp, insertQuery3);
+			strcat(temp, insertQuery3);
 
-		std::stringstream temp_str4;
-		temp_str4<<(list[i]->words_url);
-		std::string str4 = temp_str4.str();
-		const char* cstr5 = str4.c_str();
-		strcat(temp, cstr5);
+			std::stringstream temp_str4;
+			temp_str4<<(list[i]->words_url);
+			std::string str4 = temp_str4.str();
+			const char* cstr5 = str4.c_str();
+			strcat(temp, cstr5);
 
-		strcat(temp, insertQuery4);
+			strcat(temp, insertQuery4);
 
-		const char *query = temp;
+			const char *query = temp;
 
-		//printf("%s\n", query);	//used for debugging
-		
-		error = 0;
+			//printf("%s\n", query);	//used for debugging
+			
+			error = 0;
 
-		if(mysql_query(conn, query)){
-			fprintf(stderr, "%s\n", mysql_error(conn));
-			error = 1;
-			free(list[i]->url_title);
-			list[i]->url_title = strdup("Invalid Title");
-			//delete(temp);
-			//return;
-		}
+			if(mysql_query(conn, query)){
+				fprintf(stderr, "%s\n", mysql_error(conn));
+				error = 1;
+				free(list[i]->url_title);
+				list[i]->url_title = strdup("Invalid Title");
+				//delete(temp);
+				//return;
+			}
 
-		delete(temp);
-	}while(error);
+			delete(temp);
+		}while(error);
 	}
 	
 }
 
 //An easy way to find search terms from items in the database.
-//should be expanded in the future. Not the fastest way of doing this.
+//TODO:Overhaul word parsing to be more comprehensive.
 //Note: this is just going by title right now.
 void Webcrawler::wordParse(){
 
@@ -257,7 +254,7 @@ void Webcrawler::wordParse(){
 
 	int wordCount = 0;
 	maxWords = 1024;
-	char *word = new char[2048];
+	char *word = new char[MAX_LENGTH];
 	word_list = new wordList*[maxWords];
 	for(int i=0; i<maxWords; i++){
 		word_list[i] = new wordList;
@@ -306,7 +303,7 @@ void Webcrawler::wordParse(){
 	//Write words to database
 	for(int i = 0; i < wordCount; i++){
 		char *temp = new char[strlen(wordQuery1) + strlen(wordQuery2) + strlen(wordQuery3)
-		+ strlen(wordQuery4) + 2048 + sizeof(int)]();
+		+ strlen(wordQuery4) + MAX_LENGTH + sizeof(int)]();
 
 		strcat(temp, wordQuery1);
 		strcat(temp, wordQuery2);

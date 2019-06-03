@@ -27,30 +27,30 @@ void HTMLParser::parse(char *buffer, int size, int currentUrl){
 	//Initial State of the parser
 	state = START;
 
-	//Max length for title, url, and description buffers. Probably change later.
+	//Max length for title, url, and description buffers.
+	//2048 is the maxlength the database is set to handle.
 	int maxLength = 2048;
 	int count = 0;
 	int descCount = 0;
-	//int wordCount = 0;
 
 	//Booleans for when content is found
 	int titleFound = 0;
 	int descFound = 0;
 
-	//Buffers for storing data. Can probably reuse one for multiple things. 
+	//Buffers for storing data.
 	char *buf = buffer;
 	char *title_buf = new char[maxLength];
 	char *href_buf = new char[maxLength];
 	char *desc_buf = new char[maxLength];
-	char *word_buf = new char[maxLength];
 	char * buf_end = buffer + size;
 	
 	while(buf < buf_end){
 		
 		//switch for different states in the parser.
+		//TODO: Find a way to reliably parse data for descriptions!
 		switch(state){
 		case START: {
-			if((cmp(&buf, "<TITLE>")) && !(titleFound)){
+			if((cmp(&buf, "<TITLE>")) && !(titleFound)){		
 				state = TITLE;
 			}else if(cmp(&buf, "A HREF=\"ht")){
 				//only parse http links
@@ -118,9 +118,7 @@ void HTMLParser::parse(char *buffer, int size, int currentUrl){
 			}else{
 				if(descCount < maxLength-1){
 					desc_buf[descCount] = *buf;
-					//word_buf[wordCount] = *buf;
 					descCount++;
-					//wordCount++;
 				}
 				buf++;
 			}
@@ -134,7 +132,6 @@ void HTMLParser::parse(char *buffer, int size, int currentUrl){
 	delete(title_buf);
 	delete(href_buf);
 	delete(desc_buf);
-	delete(word_buf);
 }
 
 //Stores a website's title

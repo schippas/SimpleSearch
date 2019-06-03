@@ -15,7 +15,7 @@ SimpleSearch::SimpleSearch(int port, int thread):HTTPD(port, thread){
 
 	//initialize database connection
 	conn = mysql_init(NULL);
-	if(!mysql_real_connect(conn, "127.0.0.1", "root", NULL, "SimpleSearch", 3306, NULL, 0)){
+	if(!mysql_real_connect(conn, mysql_address, mysql_user, mysql_pass, mysql_schema, mysql_port, NULL, 0)){
 		fprintf(stderr, "%s\n", mysql_error(conn));
 		return;
 	}
@@ -25,30 +25,30 @@ SimpleSearch::SimpleSearch(int port, int thread):HTTPD(port, thread){
 void SimpleSearch::response(int fd, const char * document){
 	//initial HTML page
 	if(!strcmp(document, "/")){
-		const char * text = 
+		const char * initialText = 
 		   "<TITLE>Simple Search</Title>"
 		   "<CENTER><H1><em>Simple Search</em></H1>"
 		   "<H2>\n<FORM ACTION=\"search\"> Search:\n <INPUT TYPE=\"search\" NAME=\"word\">"
 		   "</FORM></H2>"
 		   "</CENTER>";
 	
-		write(fd, text, strlen(text));
+		write(fd, initialText, strlen(initialText));
 	}else 
 	
 	//Search Page and search request parsing
 	if(strncmp(document, "/search?words=", 13)){
-		const char * text = 
+		const char * searchText = 
 		   "<TITLE>Simple Search</Title>"
 		   "<CENTER><H1><em>Simple Search</em></H1>"
 		   "<H2>\n<FORM ACTION=\"search\"> Search:\n <INPUT TYPE=\"search\" NAME=\"word\">"
 		   "</FORM></H2>"
 		   "</CENTER>";
 	
-		write(fd, text, strlen(text));
+		write(fd, searchText, strlen(searchText));
 		
 		//Words being searched
-		char **words = new char*[2048];
-		char *word = new char[2048];
+		char **words = new char*[MAX_LENGTH];
+		char *word = new char[MAX_LENGTH];
 		char *request = strdup(document+13);
 		int wordCount = 0;
 
@@ -89,10 +89,8 @@ void SimpleSearch::response(int fd, const char * document){
 			
 			//store results
 			res = mysql_use_result(conn);
-			int resCount = 0;
 			int duplicate = 0;
 			while((row = mysql_fetch_row(res)) != NULL){
-				//printf("%s\n", row[0]);
 				//check for duplicate entries
 				for(int j=0; j<1024; j++){
 					if(list[j]->words_url == atoi(row[0])){
@@ -101,11 +99,9 @@ void SimpleSearch::response(int fd, const char * document){
 					}
 				}
 				if(duplicate == 0){
-					//I don't think resCount is neccessary
 					list[listCount]->words_url = atoi(row[0]); 
 					listCount++;
 				}
-				resCount++;
 				duplicate = 0;	
 			}
 			
@@ -162,10 +158,10 @@ void SimpleSearch::response(int fd, const char * document){
 
 		//Sort the links
 		relevanceSort(listCount);
-		
+
 		//Display the webpage.
+		char * text = new char[10000];
 		for ( int i = 0; i < listCount; i++ ) {
-			char * text = new char[1000000];
 			strcat(text, "<h3>");
 			std::stringstream temp_str;
 			temp_str<<(i+1);
@@ -180,12 +176,14 @@ void SimpleSearch::response(int fd, const char * document){
 			strcat(text, list[i]->url_desc);
 			strcat(text, "<p></blockquote>\n");
 			write(fd, text, strlen(text));
+			*text = '\0';
   		}
 
 		//free memory, make sure everything is freed if MYSQL has errors!
 		for(int i=0; i<wordCount; i++){
 			free(words[i]);
 		}
+		delete(text);
 		delete[] words;
 		delete(word);
 		delete[] list;
@@ -196,7 +194,7 @@ void SimpleSearch::response(int fd, const char * document){
 
 //Sorts repsonses by relevance
 void SimpleSearch::relevanceSort(int count){
-	//This is O(n^2), so it would be cool to sort this faster.
+	//TODO: This is O(n^2), so it would be cool to sort this faster.
 	for(int i = 0; i<count; i++){
 		for(int j = i; j<count; j++){
 			if(list[j]->relevance > 0){
