@@ -24,7 +24,6 @@ SimpleSearch::SimpleSearch(int port, int thread):HTTPD(port, thread){
 //responds to requests
 void SimpleSearch::response(int fd, const char * document){
 	//initial HTML page
-	//note, needs some work passing characters like '?' in search
 	if(!strcmp(document, "/")){
 		const char * text = 
 		   "<TITLE>Simple Search</Title>"
@@ -54,7 +53,7 @@ void SimpleSearch::response(int fd, const char * document){
 		int wordCount = 0;
 
 		//url records. needs to be expandable at some point.
-		urlList **list = new urlList*[1024];
+		list = new urlList*[1024];
 		for(int i=0; i<1024; i++){
 			list[i] = new urlList;
 			list[i]->words_url = 0;
@@ -160,6 +159,9 @@ void SimpleSearch::response(int fd, const char * document){
 			delete(temp);
 			
 		}	
+
+		//Sort the links
+		relevanceSort(listCount);
 		
 		//Display the webpage.
 		for ( int i = 0; i < listCount; i++ ) {
@@ -190,6 +192,22 @@ void SimpleSearch::response(int fd, const char * document){
 		free(request);
 	}//if
 
+}
+
+//Sorts repsonses by relevance
+void SimpleSearch::relevanceSort(int count){
+	//This is O(n^2), so it would be cool to sort this faster.
+	for(int i = 0; i<count; i++){
+		for(int j = i; j<count; j++){
+			if(list[j]->relevance > 0){
+				if(list[j]->relevance > list[i]->relevance){
+					urlList *temp = list[i];
+					list[i] = list[j];
+					list[j] = temp;
+				}
+			}
+		}
+	}
 }
 
 int main(int argc, char ** argv){

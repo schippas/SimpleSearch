@@ -14,6 +14,9 @@ class SimpleSearch : public HTTPD{
 	int searchPort = 8989;
 	int searchPoolC = 0;
 
+	//List of URLs to be searched.
+	urlList **list; 
+
 	//mutex lock
 	pthread_mutex_t search_tid1;
 	pthread_mutexattr_t search_attr1;
@@ -31,5 +34,8 @@ public:
 	SimpleSearch(int port, int thread);
 
 	//Responds to requests
-	void response(int fd, const char * document);	
+	void response(int fd, const char * document);
+	
+	//Sorts repsonses by relevance
+	void relevanceSort(int count);	
 };
