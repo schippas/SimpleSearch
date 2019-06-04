@@ -61,6 +61,9 @@ void SimpleSearch::response(int fd, const char * document){
 		list = new urlList*[1024];
 		for(int i=0; i<1024; i++){
 			list[i] = new urlList;
+			list[i]->url_title = NULL;
+			list[i]->url_desc = NULL;
+			list[i]->url_data = NULL;
 			list[i]->words_url = 0;
 			list[i]->relevance = 0;
 		}
@@ -197,6 +200,18 @@ void SimpleSearch::response(int fd, const char * document){
 		//free memory, make sure everything is freed if MYSQL has errors!
 		for(int i=0; i<wordCount; i++){
 			free(words[i]);
+		}
+		for(int i=0; i<listCount; i++){
+			if(list[i]->url_title != NULL){
+				free(list[i]->url_title);
+			}
+			if(list[i]->url_desc!= NULL){
+				free(list[i]->url_desc);
+			}
+			if(list[i]->url_data != NULL){
+				free(list[i]->url_data);
+			}
+			delete(list[i]);
 		}
 		delete(text);
 		delete[] words;
