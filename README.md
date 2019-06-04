@@ -31,9 +31,9 @@ In HTMLParser.h lines 22-26 and httpd.h lines 50-54 you will need to provide you
 
 Assuming you are using a Linux environment, start by going to the project directory and typing 'make' to compile the program.
 
-To run the Webcrawler, type './webcrawler <maximum nember of links you want parsed>'. Make sure that before you run it, that there is at least one url present in the database. Also note that the Webcrawler takes some time to parse out links. It works at a rate of about 100 links per minute on my virtual machine from what I've tested so far.
+To run the Webcrawler, type './webcrawler \<maximum nember of links you want parsed\>'. Make sure that before you run it, that there is at least one url present in the database. Also note that the Webcrawler takes some time to parse out links. It works at a rate of about 100 links per minute on my virtual machine from what I've tested so far.
   
-To run the Search Engine, type './simple-search -p <port number>. The -p option simply allows the server to run with multiple threads, so I recommend always using it. To connect to the server while it is runnning, go to localhost:<port number>, or the ip address of whatever machine you have it running on.
+To run the Search Engine, type './simple-search -p \<port number\>. The -p option simply allows the server to run with multiple threads, so I recommend always using it. To connect to the server while it is runnning, go to localhost:<port number>, or the ip address of whatever machine you have it running on.
   
 ## Ideas For Future Improvements
 
