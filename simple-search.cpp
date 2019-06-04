@@ -56,7 +56,8 @@ void SimpleSearch::response(int fd, const char * document){
 		char *request = strdup(document+13);
 		int wordCount = 0;
 
-		//url records. needs to be expandable at some point.
+		//URL records. 
+		//TODO: needs to be expandable at some point.
 		list = new urlList*[1024];
 		for(int i=0; i<1024; i++){
 			list[i] = new urlList;
@@ -102,7 +103,7 @@ void SimpleSearch::response(int fd, const char * document){
 						list[j]->relevance++;
 					}
 				}
-				if(duplicate == 0){
+				if((duplicate == 0) && (listCount < 1024 )){
 					list[listCount]->words_url = atoi(row[0]); 
 					listCount++;
 				}
@@ -176,11 +177,18 @@ void SimpleSearch::response(int fd, const char * document){
 			const char* cstr2 = str.c_str();
 			strcat(text, cstr2);			
 			strcat(text, " <a href=\"");
-			strcat(text, list[i]->url_data);
+			//Error checking
+			if(list[i]->url_data != NULL){
+				strcat(text, list[i]->url_data);
+			}
 			strcat(text, "\">");
-			strcat(text, list[i]->url_title);	
+			if(list[i]->url_title != NULL){
+				strcat(text, list[i]->url_title);
+			}	
 			strcat(text,  "</a><h3>\n<blockquote>");
-			strcat(text, list[i]->url_desc);
+			if(list[i]->url_desc != NULL){
+				strcat(text, list[i]->url_desc);
+			}
 			strcat(text, "<p></blockquote>\n");
 			write(fd, text, strlen(text));
 			*text = '\0';
