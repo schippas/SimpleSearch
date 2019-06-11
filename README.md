@@ -40,10 +40,10 @@ To run the Search Engine, type './simple-search -p \<port number\>. The -p optio
 * Make the Webcrawler reliably parse text from webpages to generate descriptions.
 * Look into ways to speed up the Webcrawler and word parsing process. Potentially make it multi threaded.
 * Consider making more frequent write operations in the Webcrawler, or specify a starting point for it. I'm afraid it could possibly run out of memory otherwise.
-* Have the Search Engine generate multiple pages of results, instead of just having one continous page.
+* Have the Search Engine generate multiple pages of results, instead of just having one continuous page.
 * Add a timer and result counter to display how long the Search Engine takes and how many results it produces.
 * Create nicer looking pages for the Search Engine.
-* Create a configuration utility to allow users to easily set varaibles, without going into the code.
+* Create a configuration utility to allow users to easily set variables, without going into the code.
 * Implement a faster page sort algorithm. Merge Sort would be O(n log n) instead of O(n^2).
 * Look into better ways of ranking search results.
 
