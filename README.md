@@ -1,6 +1,6 @@
 # SimpleSearch
 
-A Simple Search engine and Webcrawler combo project created in C++. It parses out links and search terms using the webcrawler, and stores them into a MySQL database. The search engine can than search the database and deliver the results to a user. The search engine also includes an http server that uses multiple threads to serve more than 1 user or instance, if needed.
+A Simple Search engine and Webcrawler combo project created in C++. It parses out links and search terms using the webcrawler, and stores them into a MySQL database. The search engine can then search the database and deliver the results to a user. The search engine also includes an http server that uses multiple threads to serve more than 1 user or instance, if needed.
 
 ## Getting Started
 
