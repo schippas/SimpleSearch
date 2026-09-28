@@ -1,0 +1,222 @@
+---
+interface Props {
+  searchQuery?: string;
+  autoFocus?: boolean;
+}
+
+const { searchQuery = "", autoFocus = false } = Astro.props;
+---
+
+<form
+  action="/search"
+  method="GET"
+  class="search-form"
+  id="search-form"
+  transition:name="search-bar"
+  data-astro-prefetch="hover"
+>
+  <div class="input-wrapper">
+    <div class="glow"></div>
+
+    <svg
+      class="search-icon"
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    >
+      <circle cx="11" cy="11" r="8"></circle>
+      <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+    </svg>
+
+    <input
+      type="text"
+      name="query"
+      id="search-input"
+      value={searchQuery}
+      placeholder="Search..."
+      autofocus={autoFocus}
+      required
+      autocomplete="off"
+      transition:persist
+    />
+
+    <button type="submit" class="search-submit-btn" aria-label="Submit">
+      <span class="btn-arrow">→</span>
+      <span class="btn-spinner hidden"></span>
+    </button>
+  </div>
+</form>
+
+<script>
+  // Add listeners at initializiation time.
+  function setupSearchBar() {
+    const forms = document.querySelectorAll<HTMLFormElement>(".search-form");
+
+    forms.forEach((form) => {
+      if (form.dataset.initialized === "true") {
+        // Sanity check
+        return;
+      } else {
+        form.dataset.initialized = "true";
+      }
+
+      const arrow = form.querySelector(".btn-arrow");
+      const spinner = form.querySelector(".btn-spinner");
+
+      // This will render the loader and hide the search button icon on submit.
+      form.addEventListener("submit", () => {
+        if (arrow && spinner) {
+          arrow.classList.add("hidden");
+          spinner.classList.remove("hidden");
+        }
+      });
+    });
+  }
+
+  // Initialize on first load
+  document.addEventListener("astro:page-load", setupSearchBar);
+</script>
+
+<style>
+  .search-form {
+    width: 100%;
+    max-width: 600px;
+  }
+
+  .input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+
+  .glow {
+    position: absolute;
+    inset: -17px;
+    border-radius: 9999px;
+    background: linear-gradient(
+      135deg,
+      rgba(138, 88, 255, 0.4),
+      rgba(140, 255, 245, 0.4),
+      rgba(212, 245, 92, 0.4)
+    );
+    background-size: 200% 200%;
+    filter: blur(8px);
+    opacity: 0.25;
+    transition:
+      opacity 0.3s ease,
+      filter 0.3s ease;
+    animation: pulse 3s ease infinite;
+  }
+
+  .input-wrapper:focus-within .glow {
+    opacity: 0.8;
+    filter: blur(12px);
+  }
+
+  .search-icon {
+    position: absolute;
+    left: 18px;
+    width: 18px;
+    height: 18px;
+    color: #8b949e;
+    transition:
+      color 0.3s ease,
+      transform 0.3s ease;
+    z-index: 2;
+  }
+
+  .input-wrapper:focus-within .search-icon {
+    color: #58a6ff;
+    transform: scale(1.1);
+  }
+
+  input {
+    position: relative;
+    width: 100%;
+    padding: 14px 50px 14px 50px;
+    font-size: 1rem;
+    border-radius: 9999px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    background-color: rgba(22, 27, 34, 0.65);
+    backdrop-filter: blur(12px);
+    color: #f0f6fc;
+    outline: none;
+    z-index: 1;
+    transition:
+      border-color 0.3s,
+      box-shadow 0.3s,
+      background-color 0.3s;
+  }
+
+  input::placeholder {
+    color: #6e7681;
+  }
+
+  input:focus {
+    border-color: rgba(88, 166, 255, 0.8);
+    background-color: rgba(0, 0, 0, 0.85);
+    box-shadow:
+      0 0 15px rgba(88, 166, 255, 0.25),
+      inset 0 0 10px rgba(188, 140, 255, 0.1);
+  }
+
+  .search-submit-btn {
+    position: absolute;
+    right: 8px;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: none;
+    background: linear-gradient(135deg, #58a6ff 0%, #bc8cff 100%);
+    color: #ffffff;
+    font-weight: bold;
+    cursor: pointer;
+    transition:
+      transform 0.2s ease,
+      opacity 0.2s ease;
+  }
+
+  .search-submit-btn:hover {
+    transform: scale(1.08);
+  }
+
+  .btn-spinner {
+    width: 14px;
+    height: 14px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-top-color: #ffffff;
+    border-radius: 50%;
+    animation: spin 0.6s linear infinite;
+  }
+
+  .hidden {
+    display: none !important;
+  }
+
+  /* Animations */
+  @keyframes pulse {
+    0% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+    100% {
+      background-position: 0% 50%;
+    }
+  }
+
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+</style>
