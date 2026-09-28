@@ -1,0 +1,41 @@
+---
+import Layout from '../layouts/RootLayout.astro';
+import SearchBar from '../components/SearchBar.astro';
+---
+
+<Layout title="Simple Search">
+  <main class="home-container">
+    <div class="search-box">
+      <h1 class="logo">Simple Search</h1>
+      <SearchBar autoFocus={true} />
+    </div>
+  </main>
+</Layout>
+
+<style>
+  .home-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
+  }
+
+  .search-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2rem;
+    width: 100%;
+    max-width: 600px;
+  }
+
+  .logo {
+    font-size: 3rem;
+    font-weight: 700;
+    letter-spacing: -0.05em;
+    background: linear-gradient(135deg, #58a6ff 0%, #bc8cff 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+</style>
