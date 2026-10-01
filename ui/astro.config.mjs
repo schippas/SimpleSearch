@@ -8,6 +8,7 @@ const __dirname = path.dirname(__filename);
 const shouldMockApi = process.env.UI_STANDALONE_MOCK === 'true';
 
 export default defineConfig({
+  output: 'server',
   vite: {
     resolve: {
       alias: {

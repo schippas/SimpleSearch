@@ -1,0 +1,155 @@
+---
+import RootLayout from '../layouts/RootLayout.astro';
+import SearchBar from '../components/SearchBar.astro';
+import { fetchSearchResults } from '@api';
+
+const query = Astro.url.searchParams.get('query') || '';
+const page = parseInt(Astro.url.searchParams.get('page') || '1', 10);
+
+let results: Array<{ url: string; title: string; snippet: string }> = [];
+let error: string | null = null;
+
+if (query) {
+  try {
+    const data = await fetchSearchResults(query, page);
+    results = data?.results || [];
+  } catch (e) {
+    error = 'Failed to load results.';
+  }
+}
+---
+
+<RootLayout title={query ? `${query} - SimpleSearch` : 'SimpleSearch'}>
+  <header class="top-bar">
+    <a href="/" class="small-logo">Simple Search</a>
+    <div class="search-wrapper">
+      <SearchBar searchQuery={query} />
+    </div>
+  </header>
+
+  <main class="results-container">
+    {!query && (
+      <p class="status-msg">Please enter a search query.</p>
+    )}
+
+    {error && (
+      <p class="status-msg error-text">{error}</p>
+    )}
+
+    {query && !error && results.length === 0 && (
+      <p class="status-msg">No results found for "{query}".</p>
+    )}
+
+    {query && !error && results.length > 0 && (
+      <div class="results-list">
+        {results.map((item) => (
+          <div class="result-card">
+            <a href={item.url} target="_blank" rel="noopener noreferrer">
+              {item.title}
+            </a>
+            <p>{item.snippet}</p>
+          </div>
+        ))}
+      </div>
+    )}
+  </main>
+</RootLayout>
+
+<style>
+  :root {
+    --logo-width: 150px;
+    --bar-gap: 2rem;
+    --page-padding-left: 2rem;
+  }
+
+  .top-bar {
+    display: flex;
+    align-items: center;
+    gap: var(--bar-gap);
+    padding: 1rem var(--page-padding-left);
+    border-bottom: 1px solid #30363d;
+    background-color: #0d1117;
+  }
+
+  .small-logo {
+    width: var(--logo-width);
+    font-weight: 800;
+    font-size: 1.2rem;
+    text-decoration: none;
+    color: #58a6ff;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .search-wrapper {
+    width: 600px;
+    max-width: 100%;
+  }
+
+  .results-container {
+    width: 600px;
+    max-width: calc(100% - (var(--page-padding-left) + var(--logo-width) + var(--bar-gap)));
+    margin-left: calc(var(--page-padding-left) + var(--logo-width) + var(--bar-gap));
+    margin-top: 2rem;
+    margin-bottom: 2rem;
+    padding-right: 1rem;
+  }
+
+  .status-msg {
+    margin-top: 2rem;
+    color: #8b949e;
+  }
+
+  .error-text {
+    color: #f85149;
+  }
+
+  .results-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  /* Using standard scoped selectors instead of :global() since Astro compiles these in-template */
+  .result-card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .result-card a {
+    color: #58a6ff;
+    font-size: 1.1rem;
+    text-decoration: none;
+  }
+
+  .result-card a:hover {
+    text-decoration: underline;
+  }
+
+  .result-card p {
+    color: #8b949e;
+    font-size: 0.9rem;
+    line-height: 1.4;
+  }
+
+  @media (max-width: 768px) {
+    .top-bar {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 1rem;
+      padding: 1rem;
+    }
+
+    .small-logo {
+      width: auto;
+    }
+
+    .results-container {
+      margin-left: 1rem;
+      width: auto;
+      max-width: 100%;
+      padding-right: 1rem;
+    }
+  }
+</style>
